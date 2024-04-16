@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "ooMd2iHR7HGCSpc3QmlCuuKRC4cGdvOTX8G5EjfXCilUQi+R30hWA4h1JW/vpBIBhjwoCFcwRgea6BmUdRRzPg==",
+  "success": false,
+  "projectFilePath": "/home/calvin/hr/jaar2/project-d_2/MauiApp1/Maui/Maui.csproj",
+  "expectedPackageFiles": [],
+  "logs": [
+    {
+      "code": "NU1012",
+      "level": "Error",
+      "message": "Platform version is not present for one or more target frameworks, even though they have specified a platform: net8.0-android"
+    }
+  ]
+}

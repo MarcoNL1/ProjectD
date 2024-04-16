@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Maui", "Maui\Maui.csproj", "{3155E7EB-322D-4B9F-B932-8F37BF914E75}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blazor", "Blazor\Blazor.csproj", "{3ED077CF-D146-4E87-9B9A-B24FA0FCEFCF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7797735E-D23A-4752-9FE5-71CCF6F71346}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3155E7EB-322D-4B9F-B932-8F37BF914E75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3155E7EB-322D-4B9F-B932-8F37BF914E75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3155E7EB-322D-4B9F-B932-8F37BF914E75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3155E7EB-322D-4B9F-B932-8F37BF914E75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3ED077CF-D146-4E87-9B9A-B24FA0FCEFCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3ED077CF-D146-4E87-9B9A-B24FA0FCEFCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3ED077CF-D146-4E87-9B9A-B24FA0FCEFCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3ED077CF-D146-4E87-9B9A-B24FA0FCEFCF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
