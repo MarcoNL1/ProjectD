@@ -1,4 +1,4 @@
-﻿namespace MauiApp1;
+﻿namespace Maui;
 
 public partial class App : Application
 {

@@ -17,7 +17,7 @@ ARG HOST_USER_ID
 WORKDIR /src
 EXPOSE 80
 EXPOSE 443
-CMD dotnet run    --no-launch-profile
+CMD dotnet run --no-launch-profile
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using MauiApp1.Data;
 
-namespace MauiApp1;
+namespace Maui;
 
 public static class MauiProgram
 {
