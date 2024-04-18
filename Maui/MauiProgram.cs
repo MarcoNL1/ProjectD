@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using MauiApp1.Data;
+using Maui.Data;
 
 namespace Maui;
 

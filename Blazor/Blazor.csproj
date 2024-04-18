@@ -25,4 +25,8 @@
       <AdditionalFiles Include="Components\_Imports.razor" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Include="wwwroot\Eneco_logo.png" />
+    </ItemGroup>
+
 </Project>
