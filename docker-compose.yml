@@ -1,13 +1,11 @@
-﻿# Root docker-compose file
-
-services:
+﻿services:
   db:
     image: postgres:12.8-bullseye
     env_file:
       - ./.env
     ports:
       - "5432:5432"
-        
+
   blazor:
     build:
       context: Blazor
@@ -16,13 +14,9 @@ services:
         - BUILD_CONFIGURATION
         - HOST_USER_ID
     volumes:
-      - ./:/src/
+      - ./Blazor/:/src/
     links:
       - db:db
-    develop:
-      watch:
-        - action: rebuild
-          path: .
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80'
@@ -35,7 +29,7 @@ services:
         - BUILD_CONFIGURATION
         - HOST_USER_ID
     volumes:
-      - ./:/src/
+      - ./Maui:/src/
     links:
       - db:db
     develop:
