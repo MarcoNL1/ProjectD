@@ -3,13 +3,13 @@ html, body {
 }
 
 a, .btn-link {
-    color: #006bb7;
+    color: #ff5733;
 }
 
 .btn-primary {
-    color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    color: #fff; /* Text color */
+    background-color: #ff5733; /* Red/orange background */
+    border-color: #e94514; /* Red/orange border color */
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
