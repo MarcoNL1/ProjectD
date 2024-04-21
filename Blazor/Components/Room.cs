@@ -3,11 +3,11 @@
 public class Room
 {
     public int FloorNumber { get; }
-    public string RoomType { get; }
+    public int RoomNumber { get;  }
 
-    public Room(int floorNumber, string roomType)
+    public Room(int floorNumber, int roomNumber)
     {
         FloorNumber = floorNumber;
-        RoomType = roomType;
+        RoomNumber = roomNumber;
     }
 }
