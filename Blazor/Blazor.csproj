@@ -30,6 +30,7 @@
       <None Update="Components\Pages\WorkspaceOverview.css">
         <DependentUpon>WorkspaceOverview.razor</DependentUpon>
       </None>
+      <None Include="wwwroot\MeetingRoom.png" />
     </ItemGroup>
 
 </Project>
