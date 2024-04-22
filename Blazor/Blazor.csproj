@@ -27,6 +27,9 @@
 
     <ItemGroup>
       <None Include="wwwroot\Eneco_logo.png" />
+      <None Update="Components\Pages\WorkspaceOverview.css">
+        <DependentUpon>WorkspaceOverview.razor</DependentUpon>
+      </None>
     </ItemGroup>
 
 </Project>

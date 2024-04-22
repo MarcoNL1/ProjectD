@@ -1,0 +1,34 @@
+﻿@page "/Workspaces"
+<PageTitle>Workspaces</PageTitle>
+<div>
+    @code{
+        List<Room> workspaceList = new()
+        {
+            new(1,1),new(1,2),
+            new(1,3), new(1,4), 
+            new(1,5)
+        };
+    }
+    @foreach (var workspace in workspaceList)
+    {
+        <div class="card" Style="width:20%;">
+            <div>
+                <div class="d-inline-block">
+                    <h5 class="m-0">@workspace.RoomNumber</h5>
+                </div>
+            </div>
+            <CardBody>
+                <table>
+                    <tr>
+                        <td>Due:</td>
+                        <td>@workspace.RoomNumber</td>
+                    </tr>
+                    <tr>
+                        <td>Description:</td>
+                        <td>@workspace.RoomNumber</td>
+                    </tr>
+                </table>
+            </CardBody>
+        </div>
+    }
+</div>

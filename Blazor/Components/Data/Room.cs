@@ -2,6 +2,7 @@
 
 public class Room
 {
+    public int ID { get; }
     public int FloorNumber { get; }
     public int RoomNumber { get;  }
     
@@ -9,5 +10,6 @@ public class Room
     {
         FloorNumber = floorNumber;
         RoomNumber = roomNumber;
+        ID = 1;
     }
 }
