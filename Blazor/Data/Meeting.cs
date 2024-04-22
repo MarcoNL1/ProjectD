@@ -1,4 +1,4 @@
-﻿namespace Blazor.Components;
+﻿namespace Blazor.Data;
 
 public class MeetingRoom : IBookable
 {
@@ -31,7 +31,7 @@ public class MeetingRoom : IBookable
             Reservation newReservation = new Reservation(user, startDate, endDate);
             reservations.Add(newReservation);
             // Link the user to the room
-            user.Book(this);
+            // user.Book(this);
             Console.WriteLine("Reservation has been made successfully.");
             return true; // Booking successful
         }

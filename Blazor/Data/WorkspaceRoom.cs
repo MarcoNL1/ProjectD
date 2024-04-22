@@ -1,4 +1,6 @@
-﻿public class WorkspaceRoom : IBookable
+﻿namespace Blazor.Data;
+
+public class WorkspaceRoom : IBookable
 {
     public int FloorNumber { get; }
     public int RoomNumber { get; }
@@ -21,7 +23,7 @@
         workspaces.Remove(workspace);
     }
 
-    public List<Workspace> IsAvailable(DateTime startDate, DateTime endDate)
+    public bool IsAvailable(DateTime startDate, DateTime endDate)
     {
         List<Workspace> availableWorkspaces = new List<Workspace>();
         foreach (var workspace in workspaces)
@@ -31,7 +33,7 @@
                 availableWorkspaces.Add(workspace);
             }
         }
-        return availableWorkspaces;
+        return true;
     }
 
     public bool Book(User user, DateTime startDate, DateTime endDate)
@@ -40,7 +42,7 @@
         {
             Reservation newReservation = new Reservation(user, startDate, endDate);
             selectedWorkspace.Reserve(newReservation);
-            user.Book(selectedWorkspace);
+            // user.Book(selectedWorkspace);
             Console.WriteLine($"Reservation for {selectedWorkspace.DeskName} has been made successfully.");
             // Reset selected workspace after booking
             selectedWorkspace = null;

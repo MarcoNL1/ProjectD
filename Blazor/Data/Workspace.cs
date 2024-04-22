@@ -1,4 +1,6 @@
-﻿public class Workspace
+﻿namespace Blazor.Data;
+
+public class Workspace
 {
     public string DeskName { get; }
     private List<Reservation> reservations = new List<Reservation>();
