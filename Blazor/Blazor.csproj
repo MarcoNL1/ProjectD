@@ -33,4 +33,8 @@
       <None Include="wwwroot\MeetingRoom.png" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Components\Data\Room.cs" />
+    </ItemGroup>
+
 </Project>

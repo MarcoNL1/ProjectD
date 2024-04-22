@@ -31,7 +31,7 @@ public class MeetingRoom : IBookable
             Reservation newReservation = new Reservation(user, startDate, endDate);
             reservations.Add(newReservation);
             // Link the user to the room
-            user.Book(this);
+            user.Book(this); //WIP
             Console.WriteLine("Reservation has been made successfully.");
             return true; // Booking successful
         }

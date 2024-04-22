@@ -1,4 +1,6 @@
-﻿public class Reservation
+﻿namespace Blazor.Components;
+
+public class Reservation
 {
     public User User { get; }
     public DateTime StartDate { get; }
