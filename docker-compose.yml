@@ -19,7 +19,7 @@
       - db:db
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80'
+      - ASPNETCORE_URLS=http://+:80
 
   maui:
     build:
