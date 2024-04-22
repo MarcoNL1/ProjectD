@@ -1,12 +1,27 @@
-﻿namespace Blazor.Components;
-
-public class Workspace : Room
+﻿public class Workspace
 {
-    public int Seats { get; }
+    public string DeskName { get; }
+    private List<Reservation> reservations = new List<Reservation>();
 
-    public Workspace(int floorNumber, int roomNumber, int seats) 
-        : base(floorNumber, roomNumber) 
+    public Workspace(string deskName)
     {
-        Seats = seats;
+        DeskName = deskName;
+    }
+
+    public bool IsAvailable(DateTime startDate, DateTime endDate)
+    {
+        foreach (var reservation in reservations)
+        {
+            if (startDate < reservation.EndDate && endDate > reservation.StartDate)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void Reserve(Reservation reservation)
+    {
+        reservations.Add(reservation);
     }
 }
