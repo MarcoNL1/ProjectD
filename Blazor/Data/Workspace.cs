@@ -1,4 +1,4 @@
-﻿namespace Blazor.Components;
+﻿namespace Blazor.Data;
 
 public class Workspace
 {
