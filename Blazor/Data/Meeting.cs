@@ -28,8 +28,8 @@ public class MeetingRoom : IBookable
     {
         if (IsAvailable(startDate, endDate))
         {
-            Reservation newReservation = new Reservation(user, startDate, endDate);
-            reservations.Add(newReservation);
+            // Reservation newReservation = new Reservation(user, this, startDate, endDate);
+            // reservations.Add(newReservation);
             // Link the user to the room
             // user.Book(this);
             Console.WriteLine("Reservation has been made successfully.");

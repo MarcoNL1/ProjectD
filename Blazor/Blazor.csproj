@@ -55,7 +55,6 @@
       <AdditionalFiles Include="Components\App.razor" />
       <AdditionalFiles Include="Components\Layout\MainLayout.razor" />
       <AdditionalFiles Include="Components\Layout\NavMenu.razor" />
-      <AdditionalFiles Include="Components\Pages\Counter.razor" />
       <AdditionalFiles Include="Components\Pages\Error.razor" />
       <AdditionalFiles Include="Components\Pages\Home.razor" />
       <AdditionalFiles Include="Components\Pages\Weather.razor" />
