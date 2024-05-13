@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace BlazorApp1.Migrations
+namespace Blazor.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     [Migration("00000000000000_CreateIdentitySchema")]
@@ -21,7 +21,7 @@ namespace BlazorApp1.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.0");
 
-            modelBuilder.Entity("BlazorApp1.Data.ApplicationUser", b =>
+            modelBuilder.Entity("Blazor.Data.User", b =>
             {
                 b.Property<string>("Id")
                     .HasColumnType("TEXT");
@@ -38,10 +38,10 @@ namespace BlazorApp1.Migrations
                     .HasColumnType("TEXT");
 
                 b.Property<bool>("EmailConfirmed")
-                    .HasColumnType("INTEGER");
+                    .HasColumnType("BOOLEAN");
 
                 b.Property<bool>("LockoutEnabled")
-                    .HasColumnType("INTEGER");
+                    .HasColumnType("BOOLEAN");
 
                 b.Property<DateTimeOffset?>("LockoutEnd")
                     .HasColumnType("TEXT");
@@ -61,13 +61,13 @@ namespace BlazorApp1.Migrations
                     .HasColumnType("TEXT");
 
                 b.Property<bool>("PhoneNumberConfirmed")
-                    .HasColumnType("INTEGER");
+                    .HasColumnType("BOOLEAN");
 
                 b.Property<string>("SecurityStamp")
                     .HasColumnType("TEXT");
 
                 b.Property<bool>("TwoFactorEnabled")
-                    .HasColumnType("INTEGER");
+                    .HasColumnType("BOOLEAN");
 
                 b.Property<string>("UserName")
                     .HasMaxLength(256)
@@ -224,7 +224,7 @@ namespace BlazorApp1.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
             {
-                b.HasOne("BlazorApp1.Data.ApplicationUser", null)
+                b.HasOne("Blazor.Data.User", null)
                     .WithMany()
                     .HasForeignKey("UserId")
                     .OnDelete(DeleteBehavior.Cascade)
@@ -233,7 +233,7 @@ namespace BlazorApp1.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
             {
-                b.HasOne("BlazorApp1.Data.ApplicationUser", null)
+                b.HasOne("Blazor.Data.User", null)
                     .WithMany()
                     .HasForeignKey("UserId")
                     .OnDelete(DeleteBehavior.Cascade)
@@ -248,7 +248,7 @@ namespace BlazorApp1.Migrations
                     .OnDelete(DeleteBehavior.Cascade)
                     .IsRequired();
 
-                b.HasOne("BlazorApp1.Data.ApplicationUser", null)
+                b.HasOne("Blazor.Data.User", null)
                     .WithMany()
                     .HasForeignKey("UserId")
                     .OnDelete(DeleteBehavior.Cascade)
@@ -257,7 +257,7 @@ namespace BlazorApp1.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
             {
-                b.HasOne("BlazorApp1.Data.ApplicationUser", null)
+                b.HasOne("Blazor.Data.User", null)
                     .WithMany()
                     .HasForeignKey("UserId")
                     .OnDelete(DeleteBehavior.Cascade)

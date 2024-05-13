@@ -14,56 +14,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <AdditionalFiles Include="Components\Account\Pages\AccessDenied.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\ConfirmEmail.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\ConfirmEmailChange.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\ExternalLogin.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\ForgotPassword.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\ForgotPasswordConfirmation.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\InvalidPasswordReset.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\InvalidUser.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\Lockout.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\Login.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\LoginWith2fa.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\LoginWithRecoveryCode.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\Manage\ChangePassword.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\Manage\DeletePersonalData.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\Manage\Disable2fa.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\Manage\Email.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\Manage\EnableAuthenticator.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\Manage\ExternalLogins.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\Manage\GenerateRecoveryCodes.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\Manage\Index.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\Manage\PersonalData.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\Manage\ResetAuthenticator.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\Manage\SetPassword.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\Manage\TwoFactorAuthentication.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\Manage\_Imports.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\Register.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\RegisterConfirmation.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\ResendEmailConfirmation.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\ResetPassword.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\ResetPasswordConfirmation.razor" />
-      <AdditionalFiles Include="Components\Account\Pages\_Imports.razor" />
-      <AdditionalFiles Include="Components\Account\Shared\AccountLayout.razor" />
-      <AdditionalFiles Include="Components\Account\Shared\ExternalLoginPicker.razor" />
-      <AdditionalFiles Include="Components\Account\Shared\ManageLayout.razor" />
-      <AdditionalFiles Include="Components\Account\Shared\ManageNavMenu.razor" />
-      <AdditionalFiles Include="Components\Account\Shared\RedirectToLogin.razor" />
-      <AdditionalFiles Include="Components\Account\Shared\ShowRecoveryCodes.razor" />
-      <AdditionalFiles Include="Components\Account\Shared\StatusMessage.razor" />
-      <AdditionalFiles Include="Components\App.razor" />
-      <AdditionalFiles Include="Components\Layout\MainLayout.razor" />
-      <AdditionalFiles Include="Components\Layout\NavMenu.razor" />
-      <AdditionalFiles Include="Components\Pages\Counter.razor" />
-      <AdditionalFiles Include="Components\Pages\Error.razor" />
-      <AdditionalFiles Include="Components\Pages\Home.razor" />
-      <AdditionalFiles Include="Components\Pages\Weather.razor" />
-      <AdditionalFiles Include="Components\Routes.razor" />
-      <AdditionalFiles Include="Components\_Imports.razor" />
-    </ItemGroup>
-
-    <ItemGroup>
       <None Include="wwwroot\Eneco_logo.png" />
       <None Update="Components\Pages\WorkspaceOverview.css">
         <DependentUpon>WorkspaceOverview.razor</DependentUpon>

@@ -1,29 +1,12 @@
 ﻿@page "/Workspaces"
+@inject RoomService RoomService
+
 <PageTitle>Workspaces</PageTitle>
-<div>
-    @*@code{
 
-        public void AddRoom()
-        {
-            List<Room> newWorkspaceList = new(workspaceList);
-            newWorkspaceList.Add(new (1,workspaceList.Last().RoomNumber + 1));
-            workspaceList = newWorkspaceList;
-            StateHasChanged();
-        }
-    }*@
+<h1>Workspaces</h1>
+<div class="d-flex flex-wrap gap-5">
 
-    @code{
-
-        List<Room> workspaceList = new()
-        {
-            new(1, 1), new(1, 2),
-            new(1, 3), new(1, 4),
-            new(1, 5)
-        };
-
-    }
-
-    @foreach (var workspace in workspaceList)
+    @foreach (var workspace in _workspaceList)
     {
         <div>
             <div>
@@ -50,8 +33,25 @@
                 }
             </div>
         </div>
-        
     }
 
     @*<button @onclick="() => AddRoom()">Click to add a Room </button>*@
 </div>
+
+@code {
+
+    private IEnumerable<Room?> _workspaceList = new List<Room?>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _workspaceList = await RoomService.GetAllRoomsAsync();
+    }
+
+    // public void AddRoom()
+    // {
+    //     List<Room> newWorkspaceList = new(workspaceList);
+    //     newWorkspaceList.Add(new (1,workspaceList.Last().RoomNumber + 1));
+    //     workspaceList = newWorkspaceList;
+    //     StateHasChanged();
+    // }
+}

@@ -6,33 +6,33 @@
     ports:
       - "5432:5432"
 
-  blazor:
-    build:
-      context: Blazor
-      target: development
-      args:
-        - BUILD_CONFIGURATION
-        - HOST_USER_ID
-    volumes:
-      - ./Blazor/:/src/
-    links:
-      - db:db
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80
-
-  maui:
-    build:
-      context: Maui
-      target: development
-      args:
-        - BUILD_CONFIGURATION
-        - HOST_USER_ID
-    volumes:
-      - ./Maui:/src/
-    links:
-      - db:db
-    develop:
-      watch:
-        - action: rebuild
-          path: .
+#  blazor:
+#    build:
+#      context: Blazor
+#      target: development
+#      args:
+#        - BUILD_CONFIGURATION
+#        - HOST_USER_ID
+#    volumes:
+#      - ./Blazor/:/src/
+#    links:
+#      - db:db
+#    environment:
+#      - ASPNETCORE_ENVIRONMENT=Development
+#      - ASPNETCORE_URLS=http://+:80
+#
+#  maui:
+#    build:
+#      context: Maui
+#      target: development
+#      args:
+#        - BUILD_CONFIGURATION
+#        - HOST_USER_ID
+#    volumes:
+#      - ./Maui:/src/
+#    links:
+#      - db:db
+#    develop:
+#      watch:
+#        - action: rebuild
+#          path: .
