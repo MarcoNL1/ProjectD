@@ -1,17 +1,28 @@
-﻿namespace Blazor.Data;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class Room
+namespace Blazor.Data;
+
+public class Room : IBookable
 {
-    public int ID { get; }
-    public int FloorNumber { get; }
-    public int RoomNumber { get;  }
-    public string Type { get; }
-    
-    public Room(int floorNumber, int roomNumber, string type = "default")
+    [Key] public Guid Id { get; set; }
+    [Required] public int FloorNumber { get; set; }
+    [Required] [MaxLength(1)] public string Wing { get; set; }
+    [Required] public int RoomNumber { get; set; }
+    [MaxLength(20)] public string Type { get; set; }
+    [MaxLength(20)] public string Name { get; set; } = "";
+    public uint MaxWorkspaces { get; set; }
+    public uint MaxReservations { get; set; }
+
+    public bool HasWorkspaces => MaxWorkspaces > 0;
+    public bool IsBookable => MaxReservations > 0;
+
+    public bool IsAvailable(DateTime startDate, DateTime endDate)
     {
-        FloorNumber = floorNumber;
-        RoomNumber = roomNumber;
-        Type = type;
-        ID = 1;
+        throw new NotImplementedException();
+    }
+
+    public bool Book(User user, DateTime startDate, DateTime endDate)
+    {
+        throw new NotImplementedException();
     }
 }

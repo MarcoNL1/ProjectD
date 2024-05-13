@@ -1,14 +1,13 @@
-﻿namespace Blazor.Data;
+﻿using System.ComponentModel.DataAnnotations;
 
-public class Workspace
+namespace Blazor.Data;
+
+public class Workspace : IBookable
 {
+    [Key]
+    public Guid Id { get; set; }
     public string DeskName { get; }
-    private List<Reservation> reservations = new List<Reservation>();
-
-    public Workspace(string deskName)
-    {
-        DeskName = deskName;
-    }
+    private List<Reservation> reservations = [];
 
     public bool IsAvailable(DateTime startDate, DateTime endDate)
     {
@@ -20,6 +19,11 @@ public class Workspace
             }
         }
         return true;
+    }
+
+    public bool Book(User user, DateTime startDate, DateTime endDate)
+    {
+        throw new NotImplementedException();
     }
 
     public void Reserve(Reservation reservation)

@@ -1,6 +1,7 @@
 using Blazor.Components;
 using Blazor.Components.Account;
 using Blazor.Data;
+using Blazor.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,7 @@ builder.Services.AddAuthentication(options =>
 
 var connectionString = builder.Configuration.GetConnectionString("Database") ??
                        throw new InvalidOperationException("Connection string 'Database' not found.");
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContextFactory<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -35,6 +36,10 @@ builder.Services.AddIdentityCore<User>(options => options.SignIn.RequireConfirme
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<User>, IdentityNoOpEmailSender>();
+
+builder.Services.AddTransient<RoomService>();
+builder.Services.AddTransient<ReservationService>();
+builder.Services.AddTransient<WorkspaceService>();
 
 var app = builder.Build();
 

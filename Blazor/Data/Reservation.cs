@@ -1,15 +1,38 @@
-﻿namespace Blazor.Data;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Blazor.Data;
 
 public class Reservation
 {
-    public User User { get; }
-    public DateTime StartDate { get; }
-    public DateTime EndDate { get; }
+    [Key] public Guid Id { get; set; }
+    [Required] public User User { get; set; }
 
-    public Reservation(User user, DateTime startDate, DateTime endDate)
+    private Room? _room;
+
+    [NotMapped]
+    public Room? Room
     {
-        User = user;
-        StartDate = startDate;
-        EndDate = endDate;
+        private get => _room;
+        set
+        {
+            if (Workspace == null) _room = value;
+        }
     }
+
+    private Workspace? _workspace;
+
+    [NotMapped]
+    public Workspace? Workspace
+    {
+        private get => _workspace;
+        set
+        {
+            if (Room == null) _workspace = value;
+        }
+    }
+
+    [NotMapped] public IBookable? Bookable => (IBookable?)Room ?? (IBookable?)Workspace;
+    [Required] public DateTime StartDate { get; set; }
+    [Required] public DateTime EndDate { get; set; }
 }
