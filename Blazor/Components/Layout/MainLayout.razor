@@ -32,7 +32,7 @@
     <main>
         <div class="top-row px-4">
             <a>@_authenticationState.User.Identity.Name</a>
-            <button @onclick="@() => Logout()">Logout</button>
+            <button @onclick="() => Logout()">Logout</button>
         </div>
         
         <article class="content px-4">
