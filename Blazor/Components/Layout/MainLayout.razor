@@ -1,4 +1,16 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@code
+{
+    private AuthenticationState _authenticationState;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    }
+}
 
 <div class="page">
     <div class="sidebar">
@@ -7,9 +19,9 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
+                    <a>@_authenticationState.User.Identity.Name</a>
+                </div>
+        
         <article class="content px-4">
             @Body
         </article>
