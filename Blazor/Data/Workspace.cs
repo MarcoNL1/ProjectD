@@ -1,11 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Blazor.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Blazor.Data;
 
 public class Workspace : IBookable
 {
-    [Key]
-    public Guid Id { get; set; }
+    [Key] public Guid Id { get; set; }
     public string DeskName { get; }
     private List<Reservation> reservations = [];
 
@@ -18,16 +19,12 @@ public class Workspace : IBookable
                 return false;
             }
         }
+
         return true;
     }
 
     public bool Book(User user, DateTime startDate, DateTime endDate)
     {
         throw new NotImplementedException();
-    }
-
-    public void Reserve(Reservation reservation)
-    {
-        reservations.Add(reservation);
     }
 }

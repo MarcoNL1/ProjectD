@@ -34,4 +34,15 @@ public class WorkspaceService(IDbContextFactory<AppDbContext> contextFactory)
         await context.SaveChangesAsync();
         return existingWorkspace;
     }
+    
+    public async Task DeleteWorkspaceAsync(Guid id)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync();
+        var workspace = await context.Workspaces.FirstOrDefaultAsync(r => r.Id == id);
+        if (workspace is not null)
+        {
+            context.Workspaces.Remove(workspace);
+            await context.SaveChangesAsync();
+        }
+    }
 }

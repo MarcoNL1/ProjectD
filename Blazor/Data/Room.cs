@@ -27,6 +27,7 @@ public class Room : IBookable
                 return false; // =occupied
             }
         }
+
         return true;
     }
 
