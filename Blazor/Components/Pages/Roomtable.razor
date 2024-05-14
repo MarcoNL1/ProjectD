@@ -1,0 +1,82 @@
+﻿@page "/roomtable"
+@using Blazor.Data
+@using System.Collections.Generic
+
+<h3>Map of floor 1</h3>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Availability</th>
+            <th>Room Number</th>
+            <th>Room Type</th>
+            <th>Room Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var room in Rooms)
+        {
+            <tr>
+                <td>@(room.IsAvailable(DateTime.Today, DateTime.Today.AddDays(1)) ? "Available" : "Occupied")</td>
+                <td>@room.RoomNumber</td>
+                <td>@room.Type</td>
+                <td>@room.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Room> Rooms { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Rooms = GenerateRooms();
+    }
+
+    private List<Room> GenerateRooms()
+    {
+        var rooms = new List<Room>();
+
+        // 8 workspaces
+        for (int i = 1; i <= 8; i++)
+        {
+            rooms.Add(new Room
+            {
+                Id = Guid.NewGuid(),
+                FloorNumber = 1,
+                RoomNumber = 100 + i, 
+                Type = "Workspace",
+                //Name = $"Workspace {i}",
+                Name = "A" + $".{i}",
+                MaxWorkspaces = 1, 
+                MaxReservations = 1
+            });
+        }
+
+        // 2 meeting rooms
+        rooms.Add(new Room
+        {
+            Id = Guid.NewGuid(),
+            FloorNumber = 1,
+            RoomNumber = 111,
+            Type = "Meeting Room",
+            Name = "Vogel rok",
+            MaxWorkspaces = 0,
+            MaxReservations = 1
+        });
+
+        rooms.Add(new Room
+        {
+            Id = Guid.NewGuid(),
+            FloorNumber = 1,
+            RoomNumber = 112,
+            Type = "Meeting Room",
+            Name = "Droomvlucht",
+            MaxWorkspaces = 0,
+            MaxReservations = 1
+        });
+
+        return rooms;
+    }
+}
