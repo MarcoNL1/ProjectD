@@ -1,14 +1,26 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@using Blazor.Components.Account
+@using Blazor.Components.Pages
 @inherits LayoutComponentBase
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject SignInManager<User> SignInManager
+@inject IdentityRedirectManager RedirectManager
 
 @code
 {
+    [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
     private AuthenticationState _authenticationState;
 
     protected override async Task OnInitializedAsync()
     {
         _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    }
+    
+    public async Task Logout()
+    {
+        await SignInManager.SignOutAsync();
+        RedirectManager.RedirectTo("/");
     }
 }
 
@@ -19,8 +31,9 @@
 
     <main>
         <div class="top-row px-4">
-                    <a>@_authenticationState.User.Identity.Name</a>
-                </div>
+            <a>@_authenticationState.User.Identity.Name</a>
+            <button @onclick="@() => Logout()">Logout</button>
+        </div>
         
         <article class="content px-4">
             @Body
