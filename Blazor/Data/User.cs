@@ -6,7 +6,7 @@ namespace Blazor.Data;
 public class User : IdentityUser
 {
     public bool IsAdmin = false;
-    
+
     public Reservation Book(IBookable bookable, DateTime startDate, DateTime endDate)
     {
         return new Reservation();

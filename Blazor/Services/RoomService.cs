@@ -40,4 +40,15 @@ public class RoomService(IDbContextFactory<AppDbContext> contextFactory)
         await context.SaveChangesAsync();
         return existingRoom;
     }
+
+    public async Task DeleteRoomAsync(Guid id)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync();
+        var room = await context.Rooms.FirstOrDefaultAsync(r => r.Id == id);
+        if (room is not null)
+        {
+            context.Rooms.Remove(room);
+            await context.SaveChangesAsync();
+        }
+    }
 }
