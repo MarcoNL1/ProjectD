@@ -16,13 +16,40 @@ public class Room : IBookable
     public bool HasWorkspaces => MaxWorkspaces > 0;
     public bool IsBookable => MaxReservations > 0;
 
+    private List<Reservation> reservations = new List<Reservation>();
+
     public bool IsAvailable(DateTime startDate, DateTime endDate)
     {
-        throw new NotImplementedException();
+        foreach (var reservation in reservations)
+        {
+            if (startDate < reservation.EndDate && endDate > reservation.StartDate)
+            {
+                return false; // =occupied
+            }
+        }
+        return true;
     }
 
     public bool Book(User user, DateTime startDate, DateTime endDate)
     {
-        throw new NotImplementedException();
+        // Implement booking logic here
+        if (IsAvailable(startDate, endDate))
+        {
+            // Create a new reservation
+            var newReservation = new Reservation
+            {
+                User = user,
+                Room = this,
+                StartDate = startDate,
+                EndDate = endDate
+            };
+
+            reservations.Add(newReservation);
+            return true; // Booking successful
+        }
+        else
+        {
+            return false; // Booking failed (room not available/occupied)
+        }
     }
 }

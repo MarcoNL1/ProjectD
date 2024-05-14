@@ -1,0 +1,155 @@
+﻿@page "/roomtable"
+@using Blazor.Data
+@using System.Collections.Generic
+
+<h3>Floor 1</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Availability</th>
+            <th>Room Number</th>
+            <th>Room Type</th>
+            <th>Room Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var room in Rooms.Where(r => r.FloorNumber == 1))
+        {
+            <tr>
+                <td>@(room.IsAvailable(DateTime.Today, DateTime.Today.AddDays(1)) ? "Available" : "Occupied")</td>
+                <td>@room.RoomNumber</td>
+                <td>@room.Type</td>
+                <td>@room.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Floor 2</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Availability</th>
+            <th>Room Number</th>
+            <th>Room Type</th>
+            <th>Room Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var room in Rooms.Where(r => r.FloorNumber == 2))
+        {
+            <tr>
+                <td>@(room.IsAvailable(DateTime.Today, DateTime.Today.AddDays(1)) ? "Available" : "Occupied")</td>
+                <td>@room.RoomNumber</td>
+                <td>@room.Type</td>
+                <td>@room.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<h3>Floor 3</h3>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Availability</th>
+            <th>Room Number</th>
+            <th>Room Type</th>
+            <th>Room Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var room in Rooms.Where(r => r.FloorNumber == 3))
+        {
+            <tr>
+                <td>@(room.IsAvailable(DateTime.Today, DateTime.Today.AddDays(1)) ? "Available" : "Occupied")</td>
+                <td>@room.RoomNumber</td>
+                <td>@room.Type</td>
+                <td>@room.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Room> Rooms { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Rooms = GenerateRooms();
+    }
+
+    private List<Room> GenerateRooms()
+    {
+        var rooms = new List<Room>();
+
+        // Rooms for Floor 1
+        for (int i = 1; i <= 8; i++)
+        {
+            rooms.Add(new Room
+            {
+                Id = Guid.NewGuid(),
+                FloorNumber = 1,
+                RoomNumber = 100 + i,
+                Type = "Workspace",
+                Name = $"A.{i}",
+                MaxWorkspaces = 1,
+                MaxReservations = 1
+            });
+        }
+
+        rooms.Add(new Room
+        {
+            Id = Guid.NewGuid(),
+            FloorNumber = 1,
+            RoomNumber = 111,
+            Type = "Meeting Room",
+            Name = "Vogel rok",
+            MaxWorkspaces = 0,
+            MaxReservations = 1
+        });
+
+        rooms.Add(new Room
+        {
+            Id = Guid.NewGuid(),
+            FloorNumber = 1,
+            RoomNumber = 112,
+            Type = "Meeting Room",
+            Name = "Droomvlucht",
+            MaxWorkspaces = 0,
+            MaxReservations = 1
+        });
+
+        // Rooms for Floor 2
+        for (int i = 1; i <= 6; i++)
+        {
+            rooms.Add(new Room
+            {
+                Id = Guid.NewGuid(),
+                FloorNumber = 2,
+                RoomNumber = 200 + i,
+                Type = "Workspace",
+                Name = $"B.{i}",
+                MaxWorkspaces = 1,
+                MaxReservations = 1
+            });
+        }
+
+        // Rooms for Floor 3
+        for (int i = 1; i <= 4; i++)
+        {
+            rooms.Add(new Room
+            {
+                Id = Guid.NewGuid(),
+                FloorNumber = 3,
+                RoomNumber = 300 + i,
+                Type = "Workspace",
+                Name = $"C.{i}",
+                MaxWorkspaces = 1,
+                MaxReservations = 1
+            });
+        }
+
+        return rooms;
+    }
+}
