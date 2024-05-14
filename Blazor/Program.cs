@@ -22,11 +22,12 @@ builder.Services.AddAuthentication(options =>
         options.DefaultScheme = IdentityConstants.ApplicationScheme;
         options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
     })
-    .AddMicrosoftAccount(microsoftOptions =>
-    {
-        microsoftOptions.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"];
-        microsoftOptions.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"];
-    })
+    // Microsoft Authentication (not complete)
+    // .AddMicrosoftAccount(microsoftOptions =>
+    // {
+    //     microsoftOptions.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"];
+    //     microsoftOptions.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"];
+    // })
     .AddIdentityCookies();
 
 var connectionString = builder.Configuration.GetConnectionString("Database") ??
