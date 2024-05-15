@@ -9,7 +9,6 @@
 
 @code
 {
-    [SupplyParameterFromQuery] private string? ReturnUrl { get; set; }
     private AuthenticationState _authenticationState;
 
     protected override async Task OnInitializedAsync()
@@ -17,11 +16,11 @@
         _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
     }
     
-    public async Task Logout()
-    {
-        await SignInManager.SignOutAsync();
-        RedirectManager.RedirectTo("/");
-    }
+    // public async Task Logout()
+    // {
+    //     await SignInManager.SignOutAsync();
+    //     RedirectManager.RedirectTo("/");
+    // }
 }
 
 <div class="page">
@@ -31,8 +30,8 @@
 
     <main>
         <div class="top-row px-4">
-            <a>@_authenticationState.User.Identity.Name</a>
-            <button @onclick="() => Logout()">Logout</button>
+            @* <a>@_authenticationState.User.Identity.Name</a> *@
+            @* <button @onclick="() => Logout()">Logout</button> *@
         </div>
         
         <article class="content px-4">
