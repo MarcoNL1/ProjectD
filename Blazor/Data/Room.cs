@@ -16,6 +16,8 @@ public class Room : IBookable
     public bool HasWorkspaces => MaxWorkspaces > 0;
     public bool IsBookable => MaxReservations > 0;
 
+    public string RoomCode => $"{FloorNumber:00}.{Wing}.{RoomNumber}";
+
     private List<Reservation> reservations = new List<Reservation>();
 
     public bool IsAvailable(DateTime startDate, DateTime endDate)

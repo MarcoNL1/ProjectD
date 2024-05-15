@@ -1,4 +1,5 @@
 ﻿@page "/"
+@inject ReservationService ReservationService
 
 <PageTitle>Home</PageTitle>
 <h1 style="color: white; background: rgba(255, 64, 0, 0.7); text-align: center; border-radius: 15px; font-family: Verdana, sans-serif ">Welcome to the Eneco Home Page</h1>
@@ -15,3 +16,23 @@
         background: rgba(255,255,255,80%) !important;
     }
 </style>
+
+<div>
+    <h3>Your reservations</h3>
+    @foreach (var reservation in Reservations)
+    {
+        <div>
+            <p>@reservation.Bookable.</p>
+        </div>
+    }
+</div>
+
+@code
+{
+    public List<Reservation> Reservations = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        Reservations = (await ReservationService.GetAllReservationsAsync()).ToList();
+    }
+}
