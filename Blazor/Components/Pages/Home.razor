@@ -22,14 +22,14 @@
     @foreach (var reservation in Reservations)
     {
         <div>
-            <p>@reservation.Bookable.</p>
+            <p>@reservation.Bookable</p>
         </div>
     }
 </div>
 
 @code
 {
-    public List<Reservation> Reservations = [];
+    private List<Reservation> Reservations = [];
 
     protected override async Task OnInitializedAsync()
     {

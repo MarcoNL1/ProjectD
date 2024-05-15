@@ -70,51 +70,6 @@
         </tbody>
     </table>
 }
-@* <h3>Floor 2</h3> *@
-@* <table class="table table-striped"> *@
-@*     <thead> *@
-@*     <tr> *@
-@*         <th>Availability</th> *@
-@*         <th>Room Code</th> *@
-@*         <th>Room Type</th> *@
-@*         <th>Room Name</th> *@
-@*     </tr> *@
-@*     </thead> *@
-@*     <tbody> *@
-@*     @foreach (var room in Rooms.Where(r => r.FloorNumber == 2)) *@
-@*     { *@
-@*         <tr> *@
-@*             <td>@(room.IsAvailable(DateTime.Today, DateTime.Today.AddDays(1)) ? "Available" : "Occupied")</td> *@
-@*             <td>@room.RoomCode</td> *@
-@*             <td>@room.Type</td> *@
-@*             <td>@room.Name</td> *@
-@*         </tr> *@
-@*     } *@
-@*     </tbody> *@
-@* </table> *@
-@* *@
-@* <h3>Floor 3</h3> *@
-@* <table class="table table-striped"> *@
-@*     <thead> *@
-@*     <tr> *@
-@*         <th>Availability</th> *@
-@*         <th>Room Code</th> *@
-@*         <th>Room Type</th> *@
-@*         <th>Room Name</th> *@
-@*     </tr> *@
-@*     </thead> *@
-@*     <tbody> *@
-@*     @foreach (var room in Rooms.Where(r => r.FloorNumber == 3)) *@
-@*     { *@
-@*         <tr> *@
-@*             <td>@(room.IsAvailable(DateTime.Today, DateTime.Today.AddDays(1)) ? "Available" : "Occupied")</td> *@
-@*             <td>@room.RoomNumber</td> *@
-@*             <td>@room.Type</td> *@
-@*             <td>@room.Name</td> *@
-@*         </tr> *@
-@*     } *@
-@*     </tbody> *@
-@* </table> *@
 
 @code {
     [SupplyParameterFromForm] public Room? Room { get; set; }
