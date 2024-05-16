@@ -1,8 +1,10 @@
 ﻿@page "/Account/LoginWithRecoveryCode"
+@attribute [AllowAnonymous]
 
 @using System.ComponentModel.DataAnnotations
 @using Microsoft.AspNetCore.Identity
 @using Blazor.Data
+@using Microsoft.AspNetCore.Authorization
 
 @inject SignInManager<User> SignInManager
 @inject UserManager<User> UserManager

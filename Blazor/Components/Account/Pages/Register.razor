@@ -1,11 +1,12 @@
 ﻿@page "/Account/Register"
+@attribute [AllowAnonymous]
 
 @using System.ComponentModel.DataAnnotations
 @using System.Text
 @using System.Text.Encodings.Web
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
-@using Blazor.Data
+@using Microsoft.AspNetCore.Authorization
 
 @inject UserManager<User> UserManager
 @inject IUserStore<User> UserStore

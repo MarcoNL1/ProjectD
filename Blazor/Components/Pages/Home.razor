@@ -22,7 +22,7 @@
     @foreach (var reservation in Reservations)
     {
         <div>
-            <p>@reservation.Bookable</p>
+            <p>@reservation.Bookable?.ToString()</p>
         </div>
     }
 </div>

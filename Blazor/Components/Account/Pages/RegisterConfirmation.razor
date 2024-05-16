@@ -1,9 +1,11 @@
 ﻿@page "/Account/RegisterConfirmation"
+@attribute [AllowAnonymous]
 
 @using System.Text
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @using Blazor.Data
+@using Microsoft.AspNetCore.Authorization
 
 @inject UserManager<User> UserManager
 @inject IEmailSender<User> EmailSender

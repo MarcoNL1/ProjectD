@@ -43,6 +43,7 @@
             <input type="number" min="0" @bind="Room!.MaxReservations"/>
         </label>
         <button type="submit">Save</button>
+        <button @onclick="() => Room = null">Cancel</button>
     </EditForm>
 }
 @foreach (var floor in Rooms.Select(r => r.FloorNumber).Distinct())

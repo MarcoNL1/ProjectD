@@ -2,6 +2,7 @@ using Blazor.Components;
 using Blazor.Components.Account;
 using Blazor.Data;
 using Blazor.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -42,6 +43,12 @@ builder.Services.AddIdentityCore<User>(options => options.SignIn.RequireConfirme
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<User>, IdentityNoOpEmailSender>();
+
+builder.Services.AddAuthorizationBuilder()
+    .AddFallbackPolicy("RequireAuthenticatedUser", policyBuilder =>
+    {
+        policyBuilder.RequireAuthenticatedUser().Build();
+    });
 
 builder.Services.AddTransient<RoomService>();
 builder.Services.AddTransient<ReservationService>();
