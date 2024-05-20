@@ -1,0 +1,13 @@
+@page "/Account/Logout"
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<User> SignInManager
+@inject IdentityRedirectManager RedirectManager
+
+@code {
+
+    protected override async Task OnInitializedAsync()
+    {
+        await SignInManager.SignOutAsync();
+        RedirectManager.RedirectTo("");
+    }
+}
