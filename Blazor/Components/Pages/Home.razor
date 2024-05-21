@@ -47,7 +47,7 @@
         List<Reservation> userReservations = new();
         foreach (Reservation res in reservations)
         {
-            if (res.User.Name == _authenticationState.User.Identity.Name)
+            if (res.User.UserName == _authenticationState.User.Identity.Name)
             {
                 userReservations.Add(res);
             }

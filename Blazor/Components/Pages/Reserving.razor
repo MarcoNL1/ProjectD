@@ -43,7 +43,10 @@
     private async Task HandleSubmit()
     {
         if (Reservation == null) return;
-        Reservation.User = new User(@_authenticationState.User.Identity.Name);
+        Reservation.User = new User
+        {
+            UserName = _authenticationState.User.Identity.Name
+        };
         Reservation.Workspace = new();
         Reservation.StartDate = Date.Date.Add(StartTime.ToTimeSpan());
         Reservation.EndDate = Date.Date.Add(EndTime.ToTimeSpan());
