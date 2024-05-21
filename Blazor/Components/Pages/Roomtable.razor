@@ -48,7 +48,7 @@
         <button @onclick="() => Room = null">Cancel</button>
     </EditForm>
 }
-@foreach (var floor in Rooms.Select(r => r.FloorNumber).Distinct())
+@foreach (var floor in Rooms.Select(r => r.FloorNumber).Distinct().Order())
 {
     <h3>Floor @floor</h3>
     <table class="table table-striped">
