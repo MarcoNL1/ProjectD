@@ -1,9 +1,8 @@
 ﻿@page "/reservation"
-@using Blazor.Components.Account
 @using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ReservationService ReservationService
-@inject IdentityRedirectManager RedirectManager
+@inject NavigationManager NavigationManager
 
 <PageTitle>Reservation</PageTitle>
 
@@ -36,7 +35,7 @@
     
     protected override async Task OnInitializedAsync()
     {
-        Reservation = null;
+        Reservation = new Reservation();
         _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
     }
     
@@ -53,7 +52,7 @@
         
         await ReservationService.CreateReservationAsync(Reservation);
         await OnInitializedAsync();
-        RedirectManager.RedirectTo("/roomtable");
+        NavigationManager.NavigateTo("/roomtable");
     }
 
 }
