@@ -1,7 +1,7 @@
 ﻿@page "/roomtable"
 @using Blazor.Components.Account
 @inject RoomService RoomService
-@inject IdentityRedirectManager RedirectManager
+@inject NavigationManager NavigationManager
 
 <button @onclick="() => Room = new Room()">New Room</button>
 @if (Room is not null)
@@ -68,7 +68,7 @@
                 <td>@room.RoomCode</td>
                 <td>@room.Type</td>
                 <td>@room.Name</td>
-                <td><button onclick="HandleReservation(@room)">Reserve Workspace</button></td>
+                <td><button @onclick="() => HandleReservation(room)">Reserve Workspace</button></td>
             </tr>
         }
         </tbody>
@@ -82,12 +82,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Room = null;
         Rooms = (await RoomService.GetAllRoomsAsync()).ToList();
     }
- 
     
-
     private void SelectRoom(Room room) => Room = room;
 
     private async Task HandleSubmit()
@@ -102,7 +99,7 @@
     {
         if (room.Reservations.Count < room.MaxReservations)
         {
-            RedirectManager.RedirectTo("reservation");
+            NavigationManager.NavigateTo($"reservation/?room={room.Id}");
         }
     }
 
