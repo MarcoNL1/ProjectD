@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ReservationService ReservationService
 
 <PageTitle>Home</PageTitle>
@@ -19,7 +21,7 @@
 
 <div>
     <h3>Your reservations</h3>
-    @foreach (var reservation in Reservations)
+    @foreach (var reservation in UserReservations)
     {
         <div>
             <p>@reservation.Bookable?.ToString()</p>
@@ -30,9 +32,27 @@
 @code
 {
     private List<Reservation> Reservations = [];
+    private AuthenticationState _authenticationState;
+    private List<Reservation> UserReservations = [];
 
     protected override async Task OnInitializedAsync()
     {
         Reservations = (await ReservationService.GetAllReservationsAsync()).ToList();
+        UserReservations = FilterReservations(Reservations);
+        _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    }
+
+    private List<Reservation> FilterReservations(List<Reservation> reservations)
+    {
+        List<Reservation> userReservations = new();
+        foreach (Reservation res in reservations)
+        {
+            if (res.User.Name == _authenticationState.User.Identity.Name)
+            {
+                userReservations.Add(res);
+            }
+        }
+
+        return userReservations;
     }
 }

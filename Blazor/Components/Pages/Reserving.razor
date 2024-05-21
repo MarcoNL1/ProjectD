@@ -1,0 +1,56 @@
+﻿@page "/reservation"
+@using Blazor.Components.Account
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ReservationService ReservationService
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Reservation</PageTitle>
+
+
+<EditForm Model="Reservation" OnValidSubmit="HandleSubmit">
+    <label>
+        Date:
+        <input type="date" min="@DateTime.Now.ToString("yyyy’-‘MM’-‘dd")" @bind="Date"/>
+    </label>
+    <label>
+        Start Time:
+        <input type="time" @bind="StartTime"/>
+    </label>
+    <label>
+        End Time:
+        <input type="time" @bind="EndTime"/>
+    </label>
+    <button type="submit">Save</button>
+    <button @onclick="() => Reservation = null">Cancel</button>
+</EditForm>
+
+
+
+@code {
+    [SupplyParameterFromForm] public Reservation? Reservation { get; set; }
+    private AuthenticationState _authenticationState;
+    DateTime Date;
+    TimeOnly StartTime;
+    TimeOnly EndTime;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        Reservation = null;
+        _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    }
+    
+    private async Task HandleSubmit()
+    {
+        if (Reservation == null) return;
+        Reservation.User = new User(@_authenticationState.User.Identity.Name);
+        Reservation.Workspace = new();
+        Reservation.StartDate = Date.Date.Add(StartTime.ToTimeSpan());
+        Reservation.EndDate = Date.Date.Add(EndTime.ToTimeSpan());
+        
+        await ReservationService.CreateReservationAsync(Reservation);
+        await OnInitializedAsync();
+        RedirectManager.RedirectTo("/roomtable");
+    }
+
+}
