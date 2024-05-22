@@ -6,8 +6,8 @@ namespace Blazor.Data;
 public class User : IdentityUser
 {
     public bool IsAdmin = false;
-    
-    public List<Reservation> Reservations { get; set; }
+
+    public IEnumerable<Reservation> Reservations { get; } = new List<Reservation>();
     public Reservation Book(IBookable bookable, DateTime startDate, DateTime endDate)
     {
         return new Reservation();

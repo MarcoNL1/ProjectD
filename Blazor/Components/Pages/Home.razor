@@ -1,7 +1,9 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ReservationService ReservationService
+@inject UserManager<User> UserManager
 
 <PageTitle>Home</PageTitle>
 <h1 style="color: white; background: rgba(255, 64, 0, 0.7); text-align: center; border-radius: 15px; font-family: Verdana, sans-serif ">Welcome to the Eneco Home Page</h1>
@@ -21,38 +23,29 @@
 
 <div>
     <h3>Your reservations</h3>
-    @foreach (var reservation in UserReservations)
+    @foreach (var reservation in Reservations)
     {
         <div>
-            <p>@reservation.Bookable?.ToString()</p>
+            <p>@reservation.StartDate.ToString("F")</p>
+            <p></p>
         </div>
     }
 </div>
 
 @code
 {
-    private List<Reservation> Reservations = [];
+    private List<Reservation> Reservations { get; set; } = [];
     private AuthenticationState _authenticationState;
-    private List<Reservation> UserReservations = [];
+    private User User { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        Reservations = (await ReservationService.GetAllReservationsAsync()).ToList();
-        UserReservations = FilterReservations(Reservations);
         _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        User = await UserManager.FindByNameAsync(_authenticationState.User.Identity.Name);
+        Reservations = (await ReservationService.GetAllReservationsAsync())
+            .AsQueryable()
+            .Where(r => r.UserId == User.Id)
+            .ToList();
     }
-
-    private List<Reservation> FilterReservations(List<Reservation> reservations)
-    {
-        List<Reservation> userReservations = new();
-        foreach (Reservation res in reservations)
-        {
-            if (res.User.UserName == _authenticationState.User.Identity.Name)
-            {
-                userReservations.Add(res);
-            }
-        }
-
-        return userReservations;
-    }
+    
 }
