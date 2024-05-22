@@ -6,7 +6,9 @@ namespace Blazor.Data;
 public class Reservation
 {
     [Key] public Guid Id { get; set; }
-    [Required] public User User { get; set; }
+    
+    public string UserId { get; set; }
+    public User User { get; set; } = null!;
 
     private Room? _room;
 
