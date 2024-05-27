@@ -12,6 +12,7 @@
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+      <Content Remove="Components\Data\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -20,6 +21,7 @@
         <DependentUpon>WorkspaceOverview.razor</DependentUpon>
       </None>
       <None Include="wwwroot\MeetingRoom.png" />
+      <None Remove="Components\Data\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -31,6 +33,15 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Components\Data\User.cs" />
+      <Compile Remove="Components\Data\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="Components\Data\**" />
     </ItemGroup>
 
 </Project>
