@@ -1,8 +1,11 @@
 ﻿@page "/reservation"
 @using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ReservationService ReservationService
 @inject NavigationManager NavigationManager
+@inject RoomService RoomService
+@inject UserManager<User> UserManager
 
 <PageTitle>Reservation</PageTitle>
 
@@ -25,33 +28,34 @@
 </EditForm>
 
 
-
 @code {
     [SupplyParameterFromForm] public Reservation? Reservation { get; set; }
+    [SupplyParameterFromQuery] public Guid RoomId { get; set; }
+    private Room Room { get; set; } = null!;
     private AuthenticationState _authenticationState;
     DateTime Date;
     TimeOnly StartTime;
     TimeOnly EndTime;
-    
+
     protected override async Task OnInitializedAsync()
     {
         Reservation = new Reservation();
+        Room = await RoomService.GetRoomByIdAsync(RoomId);
         _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
     }
-    
+
     private async Task HandleSubmit()
     {
         if (Reservation == null) return;
-        Reservation.User = new User
-        {
-            UserName = _authenticationState.User.Identity.Name
-        };
-        Reservation.Workspace = new();
+
+        var user = await UserManager.FindByNameAsync(_authenticationState.User.Identity!.Name!);
+        
+        Reservation.UserId = Guid.Parse(user!.Id).ToString();
+        Reservation.Room = Room;
         Reservation.StartDate = Date.Date.Add(StartTime.ToTimeSpan());
         Reservation.EndDate = Date.Date.Add(EndTime.ToTimeSpan());
-        
+
         await ReservationService.CreateReservationAsync(Reservation);
-        await OnInitializedAsync();
         NavigationManager.NavigateTo("/roomtable");
     }
 
