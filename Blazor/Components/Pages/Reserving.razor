@@ -52,8 +52,8 @@
         
         Reservation.UserId = Guid.Parse(user!.Id).ToString();
         Reservation.Room = Room;
-        Reservation.StartDate = Date.Date.Add(StartTime.ToTimeSpan());
-        Reservation.EndDate = Date.Date.Add(EndTime.ToTimeSpan());
+        Reservation.StartDate = Date.Date.Add(StartTime.ToTimeSpan()).ToUniversalTime();
+        Reservation.EndDate = Date.Date.Add(EndTime.ToTimeSpan()).ToUniversalTime();
 
         await ReservationService.CreateReservationAsync(Reservation);
         NavigationManager.NavigateTo("/roomtable");

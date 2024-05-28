@@ -1,0 +1,67 @@
+﻿@page "/Statistics"
+@using ChartJs.Blazor.BarChart
+@using ChartJs.Blazor.BarChart.Axes
+@using ChartJs.Blazor.Util
+@using ChartJs.Blazor.Common
+@using ChartJs.Blazor.Common.Axes
+@using ChartJs.Blazor.Common.Axes.Ticks
+
+<PageTitle>Statistics</PageTitle>
+
+<div>
+    <h1>Statistics Page</h1>
+    <Chart Config="_config"></Chart>
+</div>
+
+@code {
+    private BarConfig _config;
+
+    protected override void OnInitialized()
+    {
+        _config = new BarConfig
+        {
+            Options = new BarOptions
+            {
+                Scales = new BarScales // Configure the scales
+                {
+                    YAxes = new List<CartesianAxis> // Configure the y-axis
+                    {
+                        new BarLinearCartesianAxis
+                        {
+                            Ticks = new LinearCartesianTicks() // Configure the ticks
+                            {
+                                BeginAtZero = true // Set beginAtZero to true
+                            }
+                        }
+                    }
+                },
+                Responsive = true,
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = "Reservations for the upcoming week!"
+                }
+            }
+        };
+        // lijst van opkomende 5 dagen hier maken
+        var colors = new[] { "Dag0", "Dag1", "Dag2", "Dag3", "Dag4" };
+        foreach (var color in colors)
+        {
+            _config.Data.Labels.Add(color);
+        }
+
+        var dataset = new BarDataset<int>(new[] { 10, 20, 30, 40, 50 }) // aantal reserveringen per dag hier
+        {
+            BackgroundColor = new[]
+            {
+                ColorUtil.ColorHexString(255, 99, 132), // Bar 1 aka "Red"
+                ColorUtil.ColorHexString(255, 205, 86), // Bar 2 aka "Yellow"
+                ColorUtil.ColorHexString(75, 192, 192), // Bar 3 aka "Green"
+                ColorUtil.ColorHexString(54, 162, 235), // Bar 4 aka "Blue"
+                ColorUtil.ColorHexString(153, 102, 255) // Bar 5 aka "Purple"
+            }
+        };
+
+        _config.Data.Datasets.Add(dataset);
+    }
+}

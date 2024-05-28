@@ -26,7 +26,7 @@
     @foreach (var reservation in Reservations)
     {
         <div>
-            <p>@reservation.StartDate.ToString("F")</p>
+            <p>@reservation.StartDate.ToLocalTime().ToString("F") @reservation.EndDate.ToLocalTime().ToString("F")</p>
             <p></p>
         </div>
     }

@@ -1,3 +1,6 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/AssemblyExplorer/XmlDocument/@EntryValue">&lt;AssemblyExplorer&gt;&#xD;
+  &lt;Assembly Path="C:\Users\jerre\.nuget\packages\chartjs.blazor\2.0.0-preview1\lib\netstandard2.1\ChartJs.Blazor.dll" /&gt;&#xD;
+&lt;/AssemblyExplorer&gt;</s:String>
 	<s:String x:Key="/Default/Environment/Hierarchy/Build/BuildTool/CustomBuildToolPath/@EntryValue">/usr/share/dotnet/sdk/8.0.200/MSBuild.dll</s:String>
 	<s:Boolean x:Key="/Default/UnloadedProject/UnloadedProjects/=3155e7eb_002D322d_002D4b9f_002Db932_002D8f37bf914e75_0023Maui/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>
