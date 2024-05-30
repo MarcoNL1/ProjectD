@@ -69,6 +69,7 @@
                 <td>@room.RoomCode</td>
                 <td>@room.Type</td>
                 <td>@room.Name</td>
+                <td><button @onclick="() => DeleteRoom(room.Id)">Delete</button></td>
             </tr>
         }
         </tbody>
@@ -93,6 +94,12 @@
         if (CurrentRoom == null) return;
         if (await RoomService.UpdateRoomAsync(CurrentRoom) == null)
             await RoomService.CreateRoomAsync(CurrentRoom);
+        await OnInitializedAsync();
+    }
+    
+    private async Task DeleteRoom(Guid roomId)
+    {
+        await RoomService.DeleteRoomAsync(roomId);
         await OnInitializedAsync();
     }
 
