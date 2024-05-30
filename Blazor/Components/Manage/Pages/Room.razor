@@ -4,13 +4,13 @@
 
 @attribute [Authorize(Roles = "Admin")]
 
-<button @onclick="() => Room = new Room()">New Room</button>
-@if (Room is not null)
+<button @onclick="() => CurrentRoom = new Data.Room()">New Room</button>
+@if (CurrentRoom is not null)
 {
-    <EditForm Model="Room" OnValidSubmit="HandleSubmit">
+    <EditForm Model="CurrentRoom" OnValidSubmit="HandleSubmit">
         <label>
             FloorNumber:
-            <InputSelect @bind-Value="Room!.FloorNumber">
+            <InputSelect @bind-Value="CurrentRoom!.FloorNumber">
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -18,7 +18,7 @@
         </label>
         <label>
             Wing:
-            <InputSelect @bind-Value="Room!.Wing">
+            <InputSelect @bind-Value="CurrentRoom!.Wing">
                 <option>Select an option</option>
                 <option value="A">A</option>
                 <option value="B">B</option>
@@ -27,26 +27,26 @@
         </label>
         <label>
             Room number:
-            <InputNumber @bind-Value="Room!.RoomNumber"/>
+            <InputNumber @bind-Value="CurrentRoom!.RoomNumber"/>
         </label>
         <label>
             Name:
-            <InputText @bind-Value="Room!.Name"/>
+            <InputText @bind-Value="CurrentRoom!.Name"/>
         </label>
         <label>
             Type:
-            <InputText @bind-Value="Room!.Type"/>
+            <InputText @bind-Value="CurrentRoom!.Type"/>
         </label>
         <label>
             Max Workspaces:
-            <input type="number" min="0" @bind="Room!.MaxWorkspaces"/>
+            <input type="number" min="0" @bind="CurrentRoom!.MaxWorkspaces"/>
         </label>
         <label>
             Max Reservations:
-            <input type="number" min="0" @bind="Room!.MaxReservations"/>
+            <input type="number" min="0" @bind="CurrentRoom!.MaxReservations"/>
         </label>
         <button type="submit">Save</button>
-        <button @onclick="() => Room = null">Cancel</button>
+        <button @onclick="() => CurrentRoom = null">Cancel</button>
     </EditForm>
 }
 @foreach (var floor in Rooms.Select(r => r.FloorNumber).Distinct().Order())
@@ -76,23 +76,23 @@
 }
 
 @code {
-    [SupplyParameterFromForm] public Room? Room { get; set; }
+    [SupplyParameterFromForm] public Data.Room? CurrentRoom { get; set; }
 
-    private List<Room> Rooms { get; set; } = [];
+    private List<Data.Room> Rooms { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
-        Room = null;
+        CurrentRoom = null;
         Rooms = (await RoomService.GetAllRoomsAsync()).ToList();
     }
 
-    private void SelectRoom(Room room) => Room = room;
+    private void SelectRoom(Data.Room room) => CurrentRoom = room;
 
     private async Task HandleSubmit()
     {
-        if (Room == null) return;
-        if (await RoomService.UpdateRoomAsync(Room) == null)
-            await RoomService.CreateRoomAsync(Room);
+        if (CurrentRoom == null) return;
+        if (await RoomService.UpdateRoomAsync(CurrentRoom) == null)
+            await RoomService.CreateRoomAsync(CurrentRoom);
         await OnInitializedAsync();
     }
 
