@@ -5,18 +5,32 @@
 @using ChartJs.Blazor.Common
 @using ChartJs.Blazor.Common.Axes
 @using ChartJs.Blazor.Common.Axes.Ticks
+@inject ReservationService ReservationService
 
 <PageTitle>Statistics</PageTitle>
 
 <div>
     <h1>Statistics Page</h1>
     <Chart Config="_config"></Chart>
+    
+    @foreach (var reservation in Reservations)
+    {
+        <div>
+            <p>@reservation.StartDate.ToLocalTime().ToString("F")</p>
+        </div>
+    }
 </div>
 
 @code {
+    private List<Reservation> Reservations { get; set; } = [];
     private BarConfig _config;
 
     protected override void OnInitialized()
+    {
+        
+    }
+
+    protected override async Task OnInitializedAsync()
     {
         _config = new BarConfig
         {
@@ -43,15 +57,30 @@
                 }
             }
         };
-        // lijst van opkomende 5 dagen hier maken
-        var colors = new[] { "Dag0", "Dag1", "Dag2", "Dag3", "Dag4" };
-        foreach (var color in colors)
+        
+        var today = DateTime.Now.Date;
+
+        Reservations = (await ReservationService.GetAllReservationsAsync())
+            .Where(r => r.StartDate.Date >= today && r.StartDate.Date <= today.AddDays(4))
+            .OrderBy(r => r.StartDate)
+            .ToList();
+        
+        int[] reservationCounts = new int[5];
+        for (int i = 0; i < 5; i++)
         {
-            _config.Data.Labels.Add(color);
+            var targetDate = today.AddDays(i);
+            reservationCounts[i] = Reservations.Count(r => r.StartDate.Date == targetDate);
+        }
+        // lijst van opkomende 5 dagen hier maken
+        var labels = new[] { "Today", "Tomorrow", "Day 3", "Day 4", "Day 5" };
+        foreach (var label in labels)
+        {
+            _config.Data.Labels.Add(label);
         }
 
-        var dataset = new BarDataset<int>(new[] { 10, 20, 30, 40, 50 }) // aantal reserveringen per dag hier
+        var dataset = new BarDataset<int>(reservationCounts) // aantal reserveringen per dag hier
         {
+            Label = "Reservations",
             BackgroundColor = new[]
             {
                 ColorUtil.ColorHexString(255, 99, 132), // Bar 1 aka "Red"
