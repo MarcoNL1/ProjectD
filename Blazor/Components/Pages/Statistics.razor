@@ -72,7 +72,11 @@
             reservationCounts[i] = Reservations.Count(r => r.StartDate.Date == targetDate);
         }
         // lijst van opkomende 5 dagen hier maken
-        var labels = new[] { "Today", "Tomorrow", "Day 3", "Day 4", "Day 5" };
+        var labels = new string[5];
+        for (int i = 0; i < 5; i++)
+        {
+            labels[i] = today.AddDays(i).DayOfWeek.ToString();
+        }
         foreach (var label in labels)
         {
             _config.Data.Labels.Add(label);
