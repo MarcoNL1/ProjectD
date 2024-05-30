@@ -83,6 +83,35 @@ app.MapRazorComponents<App>()
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
 
+// User & Role seeding
+using (var scope = app.Services.CreateScope())
+{
+    const string email = "admin@admin.com";
+    const string password = "Admin1!";
+    string[] roles = ["Admin", "Manager", "User"];
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+    foreach (var role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            var roleRole = new IdentityRole(role);
+            await roleManager.CreateAsync(roleRole);
+        }
+    }
+    if (await userManager.FindByNameAsync(email) == null)
+    {
+        var user = new User
+        {
+            UserName = email,
+            Email = email,
+            EmailConfirmed = true
+        };
+        var result = await userManager.CreateAsync(user, password);
+        await userManager.AddToRoleAsync(user, "Admin");
+    }
+}
+
 app.Run();
 
 
