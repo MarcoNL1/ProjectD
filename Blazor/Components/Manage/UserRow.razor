@@ -1,23 +1,31 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @inject UserManager<User> UserManager
+@inject SignInManager<User> SignInManager
 
-<p>@CurrentUser.UserName 
-    @if (_isInRole)
-    {
-        <button @onclick="() => MakeAdmin(CurrentUser)">make admin</button>
-    }
+<p>@CurrentUser.UserName
+    <button @onclick="() => MakeAdmin(CurrentUser)">make admin</button>
     <button @onclick="() => Delete(CurrentUser)">delete</button>
 </p>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <p style="color:red">@ErrorMessage</p>
+}
+
 
 @code {
     [Parameter]
     public User CurrentUser { get; set; }
+    
+    [Parameter]
+    public EventCallback<User> OnUserDeleted { get; set; }
+    
 
-    private bool _isInRole;
+    /*private bool _isAdmin;
 
     protected override async Task OnParametersSetAsync()
     {
-        _isInRole = await IsUserInRoleAsync(CurrentUser.Id, "Admin");
+        _isAdmin = await IsUserInRoleAsync(CurrentUser.Id, "Admin");
     }
 
     private async Task<bool> IsUserInRoleAsync(string userId, string roleName)
@@ -29,17 +37,30 @@
         }
 
         return await UserManager.IsInRoleAsync(user, roleName);
-    }
-    
+    }*/
+
+    private string ErrorMessage { get; set; }
+
     private async Task Delete(User user)
     {
+        var currentUser = await UserManager.GetUserAsync(SignInManager.Context.User);
+        
+        if (currentUser.Id == user.Id)
+        {
+            ErrorMessage = "You cannot delete your own account.";
+            StateHasChanged();
+            await Task.Delay(1000);
+            ErrorMessage = string.Empty;
+            StateHasChanged();
+            return;
+        }
+
         await UserManager.DeleteAsync(user);
-        await OnInitializedAsync();
+        await OnUserDeleted.InvokeAsync(user);
     }
     
     private async Task MakeAdmin(User user)
     {
         await UserManager.AddToRoleAsync(user, "Admin");
-        await OnInitializedAsync();
     }
 }
