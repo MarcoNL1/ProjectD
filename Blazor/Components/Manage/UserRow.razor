@@ -1,0 +1,45 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+
+<p>@CurrentUser.UserName 
+    @if (_isInRole)
+    {
+        <button @onclick="() => MakeAdmin(CurrentUser)">make admin</button>
+    }
+    <button @onclick="() => Delete(CurrentUser)">delete</button>
+</p>
+
+@code {
+    [Parameter]
+    public User CurrentUser { get; set; }
+
+    private bool _isInRole;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _isInRole = await IsUserInRoleAsync(CurrentUser.Id, "Admin");
+    }
+
+    private async Task<bool> IsUserInRoleAsync(string userId, string roleName)
+    {
+        var user = await UserManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return false;
+        }
+
+        return await UserManager.IsInRoleAsync(user, roleName);
+    }
+    
+    private async Task Delete(User user)
+    {
+        await UserManager.DeleteAsync(user);
+        await OnInitializedAsync();
+    }
+    
+    private async Task MakeAdmin(User user)
+    {
+        await UserManager.AddToRoleAsync(user, "Admin");
+        await OnInitializedAsync();
+    }
+}

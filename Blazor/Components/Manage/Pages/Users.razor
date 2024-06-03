@@ -6,7 +6,7 @@
 
 @foreach (var user in UserList)
 {
-    <p>@user.UserName @user.EmailConfirmed <button @onclick="() => Delete(user)">delete</button></p>
+    <UserRow CurrentUser="user" />
 }
 
 @code {
@@ -15,11 +15,5 @@
     protected override async Task OnInitializedAsync()
     {
         UserList = await UserManager.Users.ToListAsync();
-    }
-
-    private async Task Delete(User user)
-    {
-        await UserManager.DeleteAsync(user);
-        await OnInitializedAsync();
     }
 }
