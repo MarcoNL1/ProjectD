@@ -19,5 +19,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
             .WithOne(r => r.User)
             .HasForeignKey(r => r.UserId)
             .IsRequired();
+
+        builder.Entity<Reservation>()
+            .HasOne(r => r.Room)
+            .WithMany(r => r.Reservations)
+            .HasForeignKey(r => r.RoomId);
+        
+        builder.Entity<Reservation>()
+            .HasOne(r => r.Workspace)
+            .WithMany(r => r.Reservations)
+            .HasForeignKey(r => r.WorkspaceId);
     }
 }

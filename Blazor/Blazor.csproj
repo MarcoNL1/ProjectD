@@ -45,8 +45,4 @@
       <EmbeddedResource Remove="Components\Data\**" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Data\Converters\" />
-    </ItemGroup>
-
 </Project>
