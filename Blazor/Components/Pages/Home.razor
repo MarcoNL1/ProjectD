@@ -1,9 +1,10 @@
 ﻿@page "/"
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject ReservationService ReservationService
 @inject UserManager<User> UserManager
+@inject AppDbContext Context
 
 <PageTitle>Home</PageTitle>
 <h1 style="color: white; background: rgba(255, 64, 0, 0.7); text-align: center; border-radius: 15px; font-family: Verdana, sans-serif ">Welcome to the Eneco Home Page</h1>
@@ -27,7 +28,7 @@
     {
         <div>
             <p>@reservation.StartDate.ToLocalTime().ToString("F") @reservation.EndDate.ToLocalTime().ToString("F")</p>
-            <p></p>
+            <p>@reservation.Bookable?.Id</p>
         </div>
     }
 </div>
@@ -42,9 +43,11 @@
     {
         _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         User = await UserManager.FindByNameAsync(_authenticationState.User.Identity.Name);
-        Reservations = (await ReservationService.GetAllReservationsAsync())
+        Reservations = Context.Reservations
             .AsQueryable()
             .Where(r => r.UserId == User.Id)
+            .Include(r => r.Room)
+            .Include(r => r.Workspace)
             .ToList();
     }
     

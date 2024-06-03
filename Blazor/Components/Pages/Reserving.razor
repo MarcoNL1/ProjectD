@@ -85,7 +85,8 @@
     protected override async Task OnInitializedAsync()
     {
         Reservation = new Reservation();
-        Room = await RoomService.GetRoomByIdAsync(RoomId);
+        Room = (await RoomService.GetRoomByIdAsync(RoomId))!;
+        if (Room == null) NavigationManager.NavigateTo("/roomtable");
         _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         StartHour = DateTime.Now.Hour; // Initialize StartHour to current hour
         StartMinute = DateTime.Now.Minute >= 30 ? 30 : 0; // Initialize StartMinute based on current minute
@@ -206,7 +207,7 @@
         var utcEndDateTime = TimeZoneInfo.ConvertTimeToUtc(localEndDateTime);
 
         Reservation.UserId = userId;
-        Reservation.Room = Room;
+        Reservation.SetBookable(RoomId, "room");
         Reservation.StartDate = utcStartDateTime;
         Reservation.EndDate = utcEndDateTime;
 
