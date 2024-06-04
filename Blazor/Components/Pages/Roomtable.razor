@@ -1,6 +1,11 @@
 ﻿@page "/roomtable"
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject RoomService RoomService
+@inject ReservationService ReservationService
 @inject NavigationManager NavigationManager
+@inject UserManager<User> UserManager
 
 @foreach (var floor in Rooms.Select(r => r.FloorNumber).Distinct().Order())
 {
@@ -34,12 +39,22 @@
 
 @code {
     [SupplyParameterFromForm] public Room? Room { get; set; }
+    [SupplyParameterFromQuery] public string localStartDateTimeString { get; set; }
+    [SupplyParameterFromQuery] public string localEndDateTimeString { get; set; }
+    private AuthenticationState _authenticationState;
+    
 
     private List<Room> Rooms { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
         Rooms = (await RoomService.GetAllRoomsAsync()).ToList();
+        _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        Console.WriteLine(localStartDateTimeString);
+
+
+
+
     }
     
     private void SelectRoom(Room room) => Room = room;
@@ -54,9 +69,17 @@
 
     private async Task HandleReservation(Room room)
     {
-        if (room.Reservations.Count < room.MaxReservations)
-        {
-            NavigationManager.NavigateTo($"reservation/?roomId={room.Id}");
-        }
+        Reservation Reservation = new Reservation();
+        DateTime localStartDateTime = DateTime.Parse(localStartDateTimeString);
+        DateTime localEndDateTime = DateTime.Parse(localEndDateTimeString);
+        var user = await UserManager.FindByNameAsync(_authenticationState.User.Identity!.Name!);
+        var userId = Guid.Parse(user!.Id).ToString();
+        Reservation.UserId = userId;
+        Reservation.SetBookable(room, "room");
+        var utcStartDateTime = TimeZoneInfo.ConvertTimeToUtc(localStartDateTime);
+        var utcEndDateTime = TimeZoneInfo.ConvertTimeToUtc(localEndDateTime);
+        Reservation.StartDate = utcStartDateTime;
+        Reservation.EndDate = utcEndDateTime;
+        await ReservationService.CreateReservationAsync(Reservation);
     }
 }
