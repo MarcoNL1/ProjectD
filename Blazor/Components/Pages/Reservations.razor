@@ -13,23 +13,23 @@
             <div class="card">
                 <div class="card-header">@reservation.FormatTimeRange()</div>
                 <div class="card-body">
-                    <button class="btn btn-danger" @onclick="() => _selectedReservation = reservation">Cancel</button>
+                    <button class="btn btn-danger" @onclick="() => SelectedReservation = reservation">Cancel</button>
                 </div>
             </div>
         </div>
     }
 </div>
 
-@if (_selectedReservation is not null)
+@if (SelectedReservation is not null)
 {
-    <div class="modal show" tabindex="-1" id="cancelReservationModal">
+    <div class="modal fade show d-block" tabindex="-1" id="cancelReservationModal" aria-modal="true" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
                     <p>Are you sure you want to cancel this reservation?</p>
-                </div>
+                </div>q
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary" @onclick="() => SelectedReservation = null">Close</button>
                     <button type="button" class="btn btn-danger" @onclick="CancelReservation">Cancel</button>
                 </div>
             </div>
@@ -41,7 +41,7 @@
 @code {
     private List<Reservation> ReservationList { get; set; } = [];
 
-    private Reservation? _selectedReservation;
+    public Reservation? SelectedReservation { get; set; }
 
     private AuthenticationState _authenticationState;
 
@@ -52,11 +52,16 @@
         ReservationList = (await ReservationService.GetAllReservationsByUserId(user.Id, true)).OrderBy(r => r.StartDate).ToList();
     }
 
+    private void SelectReservation(Reservation reservation)
+    {
+        SelectedReservation = reservation;
+    }
+
     private async Task CancelReservation()
     {
-        await ReservationService.DeleteReservationAsync(_selectedReservation.Id);
-        ReservationList.Remove(_selectedReservation);
-        _selectedReservation = null;
+        await ReservationService.DeleteReservationAsync(SelectedReservation.Id);
+        ReservationList.Remove(SelectedReservation);
+        SelectedReservation = null;
     }
 
 }
