@@ -5,10 +5,20 @@
 
 <h3>Users</h3>
 
-@foreach (var user in UserList)
-{
-    <UserRow CurrentUser="user" OnUserDeleted="HandleUserDeleted" />
-}
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>E-mail</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in UserList)
+        {
+            <UserRow CurrentUser="user" OnUserDeleted="HandleUserDeleted" />
+        }
+    </tbody>
+</table>
 
 @code {
     private List<User> UserList { get; set; } = [];
