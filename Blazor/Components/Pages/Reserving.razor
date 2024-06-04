@@ -191,7 +191,7 @@
             ErrorMessage = "The end time must be after the start time.";
             return;
         }
-        NavigationManager.NavigateTo($"/roomtable/?localStartDateTimeString={localStartDateTime}&localEndDateTimeString={localEndDateTime}");
+        NavigationManager.NavigateTo($"/roomtable/?Viewing=false&localStartDateTimeString={localStartDateTime}&localEndDateTimeString={localEndDateTime}");
 
     }
 }

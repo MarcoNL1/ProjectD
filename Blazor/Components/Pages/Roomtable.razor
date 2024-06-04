@@ -17,7 +17,10 @@
             <th>Room Code</th>
             <th>Room Type</th>
             <th>Room Name</th>
-            <th>Actions</th>
+            @if (!Viewing)
+            {
+                <th>Actions</th>
+            }
         </tr>
         </thead>
         <tbody>
@@ -28,9 +31,12 @@
                 <td>@room.RoomCode</td>
                 <td>@room.Type</td>
                 <td>@room.Name</td>
-                <td>
-                    <button @onclick="() => HandleReservation(room)">Reserve Workspace</button>
-                </td>
+                @if (!Viewing)
+                {
+                    <td>
+                        <button @onclick="() => HandleReservation(room)">Reserve Workspace</button>
+                    </td>
+                }
             </tr>
         }
         </tbody>
@@ -39,16 +45,21 @@
 
 @code {
     [SupplyParameterFromForm] public Room? Room { get; set; }
+    [SupplyParameterFromQuery] public bool Viewing { get; set; }
     [SupplyParameterFromQuery] public string localStartDateTimeString { get; set; }
     [SupplyParameterFromQuery] public string localEndDateTimeString { get; set; }
+    
     private AuthenticationState _authenticationState;
     
 
     private List<Room> Rooms { get; set; } = [];
+    private List<Reservation> Reservations { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
         Rooms = (await RoomService.GetAllRoomsAsync()).ToList();
+        Reservations = (await ReservationService.GetAllReservationsAsync()).ToList();
+        
         _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         Console.WriteLine(localStartDateTimeString);
 
