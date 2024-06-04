@@ -5,23 +5,28 @@
 
 <h3>Users</h3>
 
-<table class="table table-striped">
+<div>
+    <input @bind="SearchTerm" placeholder="Search users..." />
+</div>
+
+<table>
     <thead>
-        <tr>
-            <th>E-mail</th>
-            <th>Actions</th>
-        </tr>
+    <tr>
+        <th>E-mail</th>
+        <th>Actions</th>
+    </tr>
     </thead>
     <tbody>
-        @foreach (var user in UserList)
-        {
-            <UserRow CurrentUser="user" OnUserDeleted="HandleUserDeleted" />
-        }
+    @foreach (var user in FilteredUsers)
+    {
+        <UserRow CurrentUser="user" OnUserDeleted="HandleUserDeleted" />
+    }
     </tbody>
 </table>
 
 @code {
-    private List<User> UserList { get; set; } = [];
+    private List<User> UserList { get; set; } = new List<User>();
+    private string SearchTerm { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -32,6 +37,9 @@
     {
         UserList = await UserManager.Users.ToListAsync();
     }
+
+    private IEnumerable<User> FilteredUsers => UserList
+        .Where(u => u.Email.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase));
 
     private async Task HandleUserDeleted(User user)
     {
