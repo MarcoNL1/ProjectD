@@ -1,0 +1,104 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject UserManager<User> UserManager
+@inject SignInManager<User> SignInManager
+
+<style>
+.user-row {
+    display: flex;
+    align-items: center;
+}
+
+.username {
+    flex-grow: 1;
+}
+
+.actions {
+    display: flex;
+    gap: 7px;
+    margin-right: 650px;
+}
+</style>
+
+<div class="user-row">
+    <div class="username">@CurrentUser.UserName</div>
+    <div class="actions">
+        <button @onclick="() => MakeAdmin(CurrentUser)">make admin</button>
+        <button @onclick="() => RemoveAdmin(CurrentUser)">remove admin</button>
+        <button @onclick="() => Delete(CurrentUser)">delete</button>
+    </div>
+</div>
+
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <p style="color:red">@ErrorMessage</p>
+}
+
+
+@code {
+    [Parameter]
+    public User CurrentUser { get; set; }
+    
+    [Parameter]
+    public EventCallback<User> OnUserDeleted { get; set; }
+    
+
+    /*private bool _isAdmin;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _isAdmin = await IsUserInRoleAsync(CurrentUser.Id, "Admin");
+    }
+
+    private async Task<bool> IsUserInRoleAsync(string userId, string roleName)
+    {
+        var user = await UserManager.FindByIdAsync(userId);
+        if (user == null)
+        {
+            return false;
+        }
+
+        return await UserManager.IsInRoleAsync(user, roleName);
+    }*/
+
+    private string ErrorMessage { get; set; }
+
+    private async Task Delete(User user)
+    {
+        var currentUser = await UserManager.GetUserAsync(SignInManager.Context.User);
+        
+        if (currentUser.Id == user.Id)
+        {
+            ErrorMessage = "You cannot delete your own account.";
+            StateHasChanged();
+            await Task.Delay(1000);
+            ErrorMessage = string.Empty;
+            StateHasChanged();
+            return;
+        }
+
+        await UserManager.DeleteAsync(user);
+        await OnUserDeleted.InvokeAsync(user);
+    }
+    
+    private async Task MakeAdmin(User user)
+    {
+        await UserManager.AddToRoleAsync(user, "Admin");
+    }
+    
+    private async Task RemoveAdmin(User user)
+    {
+        var currentUser = await UserManager.GetUserAsync(SignInManager.Context.User);
+        
+        if (currentUser.Id == user.Id)
+        {
+            ErrorMessage = "You cannot remove your own admin role.";
+            StateHasChanged();
+            await Task.Delay(1000);
+            ErrorMessage = string.Empty;
+            StateHasChanged();
+            return;
+        }
+        
+        await UserManager.RemoveFromRoleAsync(user, "Admin");
+    }
+}

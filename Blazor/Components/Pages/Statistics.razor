@@ -30,8 +30,8 @@
 </div>
 
 @code {
-    private List<Reservation> Reservations { get; set; } = new List<Reservation>();
-    private List<(int FloorNumber, List<int?> RoomNumbers)> activeFloors { get; set; } = new List<(int FloorNumber, List<int?> RoomNumbers)>();
+    private List<Reservation> Reservations { get; set; } = new();
+    private List<(int FloorNumber, List<int?> RoomNumbers)> activeFloors { get; set; } = new();
     private BarConfig _config;
 
     protected override void OnInitialized()
@@ -76,7 +76,7 @@
             .ToList();
 
         var activeReservations = (await ReservationService.GetAllReservationsAsync())
-            .Where(r => r.StartDate.AddHours(1) <= now && r.EndDate.AddHours(1) >= now)
+            .Where(r => r.StartDate.AddHours(2) <= now && r.EndDate.AddHours(2) >= now)
             .OrderBy(r => r.StartDate)
             .ToList();
 

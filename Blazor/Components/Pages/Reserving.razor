@@ -16,7 +16,7 @@
 
 <EditForm Model="Reservation" OnValidSubmit="HandleSubmit">
     <div>
-        <label>Datum:</label>
+        <label>Date:</label>
         <select @onchange="UpdateDate">
             @for (var i = 0; i < 14; i++)
             {
@@ -26,8 +26,8 @@
         </select>
     </div>
     <div>
-        <label>Begintijd:</label>
-        U
+        <label>Start Time:</label>
+        H
         <select @onchange="UpdateStartHour">
             @foreach (var hour in StartHours)
             {
@@ -43,8 +43,8 @@
         </select>
     </div>
     <div>
-        <label>Eindtijd:</label>
-        U
+        <label>End Time:</label>
+        H
         <select @onchange="UpdateEndHour">
             @foreach (var hour in EndHours)
             {
@@ -67,9 +67,6 @@
 
 @code {
     [SupplyParameterFromForm] public Reservation? Reservation { get; set; }
-    [SupplyParameterFromQuery] public Guid RoomId { get; set; }
-    private Room Room { get; set; } = null!;
-    private AuthenticationState _authenticationState;
     private DateTime SelectedDate = DateTime.Today;
     private int StartHour;
     private int StartMinute;
@@ -85,11 +82,8 @@
     protected override async Task OnInitializedAsync()
     {
         Reservation = new Reservation();
-        Room = (await RoomService.GetRoomByIdAsync(RoomId))!; 
-        if (Room == null) NavigationManager.NavigateTo("/roomtable");
-        _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        StartHour = DateTime.Now.Hour; // Initialize StartHour to current hour
-        StartMinute = DateTime.Now.Minute >= 30 ? 30 : 0; // Initialize StartMinute based on current minute
+        StartHour = DateTime.Now.Hour;
+        StartMinute = DateTime.Now.Minute >= 30 ? 30 : 0;
         UpdateTimeOptions();
         UpdateEndTimeOptions();
     }
@@ -136,7 +130,7 @@
                 StartHours.Add(hour);
             }
 
-            StartMinutes = new List<int> { 0, 30 }; // Ensure both 0 and 30 are available
+            StartMinutes = new List<int> { 0, 30 };
         }
         else
         {
@@ -157,7 +151,6 @@
 
         if (StartHour == EndHour)
         {
-            // If the start hour and end hour are the same, adjust the end minutes
             if (StartMinute == 0)
             {
                 EndMinutes = new List<int> { 30 };
@@ -182,9 +175,6 @@
     {
         if (Reservation == null) return;
 
-        var user = await UserManager.FindByNameAsync(_authenticationState.User.Identity!.Name!);
-        var userId = Guid.Parse(user!.Id).ToString();
-
         var localStartDateTime = new DateTime(SelectedDate.Year, SelectedDate.Month, SelectedDate.Day, StartHour, StartMinute, 0);
         var localEndDateTime = new DateTime(SelectedDate.Year, SelectedDate.Month, SelectedDate.Day, EndHour, EndMinute, 0);
 
@@ -201,17 +191,7 @@
             ErrorMessage = "The end time must be after the start time.";
             return;
         }
+        NavigationManager.NavigateTo($"/roomtable/?localStartDateTimeString={localStartDateTime}&localEndDateTimeString={localEndDateTime}");
 
-        // Convert local times to UTC
-        var utcStartDateTime = TimeZoneInfo.ConvertTimeToUtc(localStartDateTime);
-        var utcEndDateTime = TimeZoneInfo.ConvertTimeToUtc(localEndDateTime);
-
-        Reservation.UserId = userId;
-        Reservation.SetBookable(RoomId, "room");
-        Reservation.StartDate = utcStartDateTime;
-        Reservation.EndDate = utcEndDateTime;
-
-        await ReservationService.CreateReservationAsync(Reservation);
-        NavigationManager.NavigateTo("/roomtable");
     }
 }

@@ -187,7 +187,8 @@ Console.WriteLine("Image clicked!");
 <h1 style="color: white; background: rgba(255, 64, 0, 0.7); text-align: center; border-radius: 15px; font-family: Futura, sans-serif">
     Welcome to the Eneco Home Page
 </h1>
-
+<h3>Make a reservation:</h3>
+<button @onclick="() => HandleReservation()">Reserve here</button>
 <h3>Eneco floor plan view</h3>
 
 <!-- Interactable Image with Clickable Area, @onclick="() => OnAreaClick('A')" alt="Wing A" /> -->
@@ -227,6 +228,11 @@ Reservations = await Context.Reservations
 .Include(r => r.Room)
 .Include(r => r.Workspace)
 .ToListAsync();
+}
+
+private async Task HandleReservation()
+{
+    NavigationManager.NavigateTo("reservation");
 }
 
 private void OnArea1Click()

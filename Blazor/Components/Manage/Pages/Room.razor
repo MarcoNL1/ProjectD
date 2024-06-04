@@ -1,0 +1,101 @@
+@page "/Manage/Room"
+@using Microsoft.AspNetCore.Authorization
+@inject RoomService RoomService
+
+@attribute [Authorize(Roles = "Admin")]
+
+<button @onclick="() => CurrentRoom = new Data.Room()">New Room</button>
+@if (CurrentRoom is not null)
+{
+    <EditForm Model="CurrentRoom" OnValidSubmit="HandleSubmit">
+        <label>
+            FloorNumber:
+            <InputSelect @bind-Value="CurrentRoom!.FloorNumber">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+            </InputSelect>
+        </label>
+        <label>
+            Wing:
+            <InputSelect @bind-Value="CurrentRoom!.Wing">
+                <option>Select an option</option>
+                <option value="A">A</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+            </InputSelect>
+        </label>
+        <label>
+            Room number:
+            <InputNumber @bind-Value="CurrentRoom!.RoomNumber"/>
+        </label>
+        <label>
+            Name:
+            <InputText @bind-Value="CurrentRoom!.Name"/>
+        </label>
+        <label>
+            <InputSelect @bind-Value="CurrentRoom!.Type">
+                <option>Select an option</option>
+                <option value="Meeting">Meeting</option>
+                <option value="Workspace">Workspace</option>
+            </InputSelect>
+        </label>
+        <button type="submit">Save</button>
+        <button @onclick="() => CurrentRoom = null">Cancel</button>
+    </EditForm>
+}
+@foreach (var floor in Rooms.Select(r => r.FloorNumber).Distinct().Order())
+{
+    <h3>Floor @floor</h3>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Availability</th>
+            <th>Room Code</th>
+            <th>Room Type</th>
+            <th>Room Name</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var room in Rooms.Where(r => r.FloorNumber == floor))
+        {
+            <tr @onclick:preventDefault @onclick="() => SelectRoom(room)">
+                <td>@(room.IsAvailable(DateTime.Today, DateTime.Today.AddDays(1)) ? "Available" : "Occupied")</td>
+                <td>@room.RoomCode</td>
+                <td>@room.Type</td>
+                <td>@room.Name</td>
+                <td><button @onclick="() => DeleteRoom(room.Id)">Delete</button></td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    [SupplyParameterFromForm] public Data.Room? CurrentRoom { get; set; }
+
+    private List<Data.Room> Rooms { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        CurrentRoom = null;
+        Rooms = (await RoomService.GetAllRoomsAsync()).ToList();
+    }
+
+    private void SelectRoom(Data.Room room) => CurrentRoom = room;
+
+    private async Task HandleSubmit()
+    {
+        if (CurrentRoom == null) return;
+        if (await RoomService.UpdateRoomAsync(CurrentRoom) == null)
+            await RoomService.CreateRoomAsync(CurrentRoom);
+        await OnInitializedAsync();
+    }
+    
+    private async Task DeleteRoom(Guid roomId)
+    {
+        await RoomService.DeleteRoomAsync(roomId);
+        await OnInitializedAsync();
+    }
+
+}

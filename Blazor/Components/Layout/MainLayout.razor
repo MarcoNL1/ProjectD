@@ -11,6 +11,10 @@
         _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
     }
 }
+
+<AuthorizeView Roles="Admin">
+    <ManageMenu/>
+</AuthorizeView>
 <MudThemeProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>

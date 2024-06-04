@@ -1,0 +1,32 @@
+@page "/Manage/Users"
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@inject UserManager<User> UserManager
+
+<h3>Users</h3>
+
+@foreach (var user in UserList)
+{
+    <UserRow CurrentUser="user" OnUserDeleted="HandleUserDeleted" />
+}
+
+@code {
+    private List<User> UserList { get; set; } = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        UserList = await UserManager.Users.ToListAsync();
+    }
+
+    private async Task HandleUserDeleted(User user)
+    {
+        // Refresh the user list
+        await LoadUsers();
+        StateHasChanged();
+    }
+}
