@@ -10,13 +10,24 @@ public class ReservationService(IDbContextFactory<AppDbContext> contextFactory)
         await using var context = await contextFactory.CreateDbContextAsync();
         return await context.Reservations.ToListAsync();
     }
-    
+
     public async Task<Reservation?> GetReservationByIdAsync(Guid id)
     {
         await using var context = await contextFactory.CreateDbContextAsync();
         return await context.Reservations.FirstOrDefaultAsync(r => r.Id == id);
     }
-    
+
+    public async Task<List<Reservation>> GetAllReservationsByUserId(string userId, bool withBookable = false)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync();
+        if (withBookable)
+            return await context.Reservations.Where(r => r.UserId == userId)
+                .Include(r => r.Room)
+                .Include(r => r.Workspace)
+                .ToListAsync();
+        return await context.Reservations.Where(r => r.UserId == userId).ToListAsync();
+    }
+
     public async Task<Reservation> CreateReservationAsync(Reservation reservation)
     {
         await using var context = await contextFactory.CreateDbContextAsync();
@@ -24,7 +35,7 @@ public class ReservationService(IDbContextFactory<AppDbContext> contextFactory)
         await context.SaveChangesAsync();
         return reservation;
     }
-    
+
     public async Task DeleteReservationAsync(Guid id)
     {
         await using var context = await contextFactory.CreateDbContextAsync();

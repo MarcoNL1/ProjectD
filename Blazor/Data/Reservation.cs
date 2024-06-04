@@ -53,4 +53,9 @@ public class Reservation
     {
         return SetBookable(bookable.Id, type);
     }
+    
+    public string FormatTimeRange()
+    {
+        return $"{StartDate:dddd, MMMM d} {StartDate:HH:mm} - {(StartDate.Date == EndDate.Date ? string.Empty : $"{EndDate:dddd, MMMM d}")} {EndDate:HH:mm}";
+    }
 }

@@ -1,0 +1,63 @@
+@page "/Reservations"
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@inject ReservationService ReservationService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<User> UserManager
+<h3>Reservations</h3>
+
+<div class="row row-cols-1 row-cols-md-2 g-3">
+    @foreach (var reservation in ReservationList)
+    {
+        <div class="col">
+            <div class="card">
+                <div class="card-header">@reservation.FormatTimeRange()</div>
+                <div class="card-body">
+                    <button class="btn btn-danger" @onclick="() => _selectedReservation = reservation">Cancel</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (_selectedReservation is not null)
+{
+    <div class="modal show" tabindex="-1" id="cancelReservationModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p>Are you sure you want to cancel this reservation?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger" @onclick="CancelReservation">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    private List<Reservation> ReservationList { get; set; } = [];
+
+    private Reservation? _selectedReservation;
+
+    private AuthenticationState _authenticationState;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = await UserManager.FindByNameAsync(_authenticationState.User.Identity.Name);
+        ReservationList = (await ReservationService.GetAllReservationsByUserId(user.Id, true)).OrderBy(r => r.StartDate).ToList();
+    }
+
+    private async Task CancelReservation()
+    {
+        await ReservationService.DeleteReservationAsync(_selectedReservation.Id);
+        ReservationList.Remove(_selectedReservation);
+        _selectedReservation = null;
+    }
+
+}
+
