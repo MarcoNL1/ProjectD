@@ -11,11 +11,15 @@ public class RoomService(IDbContextFactory<AppDbContext> contextFactory)
         return await context.Rooms.Include(r => r.Reservations).ToListAsync();
     }
 
-    public async Task<Room?> GetRoomByIdAsync(Guid id)
+    public async Task<Room?> GetRoomByIdAsync(Guid? id)
     {
+        if (id == null)
+            return null;
+
         await using var context = await contextFactory.CreateDbContextAsync();
         return await context.Rooms.FirstOrDefaultAsync(r => r.Id == id);
     }
+
 
     public async Task<Room> CreateRoomAsync(Room room)
     {

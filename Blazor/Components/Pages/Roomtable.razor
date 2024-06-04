@@ -1,5 +1,4 @@
 ﻿@page "/roomtable"
-@using Blazor.Components.Account
 @inject RoomService RoomService
 @inject NavigationManager NavigationManager
 
@@ -62,9 +61,9 @@
         </tr>
         </thead>
         <tbody>
-        @foreach (var room in Rooms.Where(r => r.FloorNumber == floor))
+        @foreach (var room in Rooms.Where(r => r.FloorNumber == floor).OrderBy(r => r.Wing).ThenBy(r => r.RoomNumber))
         {
-            <tr @onclick:preventDefault @onclick="() => SelectRoom(room)">
+            <tr>
                 <td>@(room.IsAvailable(DateTime.Today, DateTime.Today.AddDays(1)) ? "Available" : "Occupied")</td>
                 <td>@room.RoomCode</td>
                 <td>@room.Type</td>
@@ -102,7 +101,7 @@
     {
         if (room.Reservations.Count < room.MaxReservations)
         {
-            NavigationManager.NavigateTo($"reservation/?room={room.Id}");
+            NavigationManager.NavigateTo($"reservation/?roomId={room.Id}");
         }
     }
 }

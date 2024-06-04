@@ -5,32 +5,55 @@
 @using ChartJs.Blazor.Common
 @using ChartJs.Blazor.Common.Axes
 @using ChartJs.Blazor.Common.Axes.Ticks
+@inject ReservationService ReservationService
+@inject RoomService RoomService
 
 <PageTitle>Statistics</PageTitle>
 
 <div>
     <h1>Statistics Page</h1>
     <Chart Config="_config"></Chart>
+    
+    <h3>Active Floors</h3>
+    @foreach (var floor in activeFloors)
+    {
+        <div>
+            <p>Floor: @floor.FloorNumber</p>
+            <ul>
+                @foreach (var roomNumber in floor.RoomNumbers)
+                {
+                    <li>Room: @roomNumber</li>
+                }
+            </ul>
+        </div>
+    }
 </div>
 
 @code {
+    private List<Reservation> Reservations { get; set; } = new();
+    private List<(int FloorNumber, List<int?> RoomNumbers)> activeFloors { get; set; } = new();
     private BarConfig _config;
 
     protected override void OnInitialized()
+    {
+    }
+
+    protected override async Task OnInitializedAsync()
     {
         _config = new BarConfig
         {
             Options = new BarOptions
             {
-                Scales = new BarScales // Configure the scales
+                Scales = new BarScales
                 {
-                    YAxes = new List<CartesianAxis> // Configure the y-axis
+                    YAxes = new List<CartesianAxis>
                     {
                         new BarLinearCartesianAxis
                         {
-                            Ticks = new LinearCartesianTicks() // Configure the ticks
+                            Ticks = new LinearCartesianTicks
                             {
-                                BeginAtZero = true // Set beginAtZero to true
+                                BeginAtZero = true,
+                                StepSize = 1,
                             }
                         }
                     }
@@ -39,26 +62,70 @@
                 Title = new OptionsTitle
                 {
                     Display = true,
-                    Text = "Reservations for the upcoming week!"
+                    Text = "Reservations for today and tomorrow!"
                 }
             }
         };
-        // lijst van opkomende 5 dagen hier maken
-        var colors = new[] { "Dag0", "Dag1", "Dag2", "Dag3", "Dag4" };
-        foreach (var color in colors)
+
+        var today = DateTime.Now.Date;
+        var now = DateTime.Now;
+
+        Reservations = (await ReservationService.GetAllReservationsAsync())
+            .Where(r => r.StartDate.Date >= today && r.StartDate.Date <= today.AddDays(1))
+            .OrderBy(r => r.StartDate)
+            .ToList();
+
+        var activeReservations = (await ReservationService.GetAllReservationsAsync())
+            .Where(r => r.StartDate.AddHours(2) <= now && r.EndDate.AddHours(2) >= now)
+            .OrderBy(r => r.StartDate)
+            .ToList();
+
+        var tempActiveFloors = new List<(int FloorNumber, List<int?> RoomNumbers)>();
+
+        foreach (var reservation in activeReservations)
         {
-            _config.Data.Labels.Add(color);
+            var room = await RoomService.GetRoomByIdAsync(reservation.RoomId);
+            if (room != null)
+            {
+                var existingFloor = tempActiveFloors.FirstOrDefault(f => f.FloorNumber == room.FloorNumber);
+                if (existingFloor != default)
+                {
+                    existingFloor.RoomNumbers.Add(room.RoomNumber);
+                }
+                else
+                {
+                    tempActiveFloors.Add((room.FloorNumber, new List<int?> { room.RoomNumber }));
+                }
+            }
         }
 
-        var dataset = new BarDataset<int>(new[] { 10, 20, 30, 40, 50 }) // aantal reserveringen per dag hier
+        activeFloors = tempActiveFloors.Select(f => (f.FloorNumber, f.RoomNumbers.Distinct().ToList())).ToList();
+
+        int[] reservationCounts = new int[2];
+        for (int i = 0; i < 2; i++)
         {
+            var targetDate = today.AddDays(i);
+            reservationCounts[i] = Reservations.Count(r => r.StartDate.Date == targetDate);
+        }
+
+        var labels = new string[2];
+        for (int i = 0; i < 2; i++)
+        {
+            labels[i] = today.AddDays(i).DayOfWeek.ToString();
+        }
+
+        foreach (var label in labels)
+        {
+            _config.Data.Labels.Add(label);
+        }
+
+        var dataset = new BarDataset<int>(reservationCounts)
+        {
+            Label = "Reservations",
             BackgroundColor = new[]
             {
-                ColorUtil.ColorHexString(255, 99, 132), // Bar 1 aka "Red"
-                ColorUtil.ColorHexString(255, 205, 86), // Bar 2 aka "Yellow"
-                ColorUtil.ColorHexString(75, 192, 192), // Bar 3 aka "Green"
-                ColorUtil.ColorHexString(54, 162, 235), // Bar 4 aka "Blue"
-                ColorUtil.ColorHexString(153, 102, 255) // Bar 5 aka "Purple"
+                ColorUtil.ColorHexString(255, 99, 132),
+                ColorUtil.ColorHexString(255, 99, 132),
             }
         };
 
