@@ -34,16 +34,11 @@
             <InputText @bind-Value="CurrentRoom!.Name"/>
         </label>
         <label>
-            Type:
-            <InputText @bind-Value="CurrentRoom!.Type"/>
-        </label>
-        <label>
-            Max Workspaces:
-            <input type="number" min="0" @bind="CurrentRoom!.MaxWorkspaces"/>
-        </label>
-        <label>
-            Max Reservations:
-            <input type="number" min="0" @bind="CurrentRoom!.MaxReservations"/>
+            <InputSelect @bind-Value="CurrentRoom!.Type">
+                <option>Select an option</option>
+                <option value="Meeting">Meeting</option>
+                <option value="Workspace">Workspace</option>
+            </InputSelect>
         </label>
         <button type="submit">Save</button>
         <button @onclick="() => CurrentRoom = null">Cancel</button>
