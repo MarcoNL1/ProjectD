@@ -30,104 +30,105 @@
 </div>
 
 @code {
-    private List<Reservation> Reservations { get; set; } = [];
+    private List<Reservation> Reservations { get; set; } = new List<Reservation>();
     private List<(int FloorNumber, List<int?> RoomNumbers)> activeFloors { get; set; } = new List<(int FloorNumber, List<int?> RoomNumbers)>();
     private BarConfig _config;
 
     protected override void OnInitialized()
     {
-        
     }
 
     protected override async Task OnInitializedAsync()
-{
-    _config = new BarConfig
     {
-        Options = new BarOptions
+        _config = new BarConfig
         {
-            Scales = new BarScales // Configure the scales
+            Options = new BarOptions
             {
-                YAxes = new List<CartesianAxis> // Configure the y-axis
+                Scales = new BarScales
                 {
-                    new BarLinearCartesianAxis
+                    YAxes = new List<CartesianAxis>
                     {
-                        Ticks = new LinearCartesianTicks() // Configure the ticks
+                        new BarLinearCartesianAxis
                         {
-                            BeginAtZero = true, // Set beginAtZero to true
-                            StepSize = 1, // so no decimals show in the y-axis. might be messy in the y-axis, if there are a lot of reservations
+                            Ticks = new LinearCartesianTicks
+                            {
+                                BeginAtZero = true,
+                                StepSize = 1,
+                            }
                         }
                     }
+                },
+                Responsive = true,
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = "Reservations for today and tomorrow!"
                 }
-            },
-            Responsive = true,
-            Title = new OptionsTitle
-            {
-                Display = true,
-                Text = "Reservations for today and tomorrow!"
             }
-        }
-    };
+        };
 
-    var now = DateTime.Now.Date;
-    
-    Reservations = (await ReservationService.GetAllReservationsAsync())
-        .Where(r => r.StartDate.Date >= now && r.StartDate.Date <= now.AddDays(1))
-        .OrderBy(r => r.StartDate)
-        .ToList();
-    
-    var activeReservations = (await ReservationService.GetAllReservationsAsync())
-        .Where(r => r.StartDate.Date <= now && r.EndDate.Date >= now)
-        .OrderBy(r => r.StartDate)
-        .ToList();
-    
-    foreach (var reservation in activeReservations)
-    {
-        var room = await RoomService.GetRoomByIdAsync(reservation.RoomId);
-        if (room != null)
+        var today = DateTime.Now.Date;
+        var now = DateTime.Now;
+
+        Reservations = (await ReservationService.GetAllReservationsAsync())
+            .Where(r => r.StartDate.Date >= today && r.StartDate.Date <= today.AddDays(1))
+            .OrderBy(r => r.StartDate)
+            .ToList();
+
+        var activeReservations = (await ReservationService.GetAllReservationsAsync())
+            .Where(r => r.StartDate.AddHours(1) <= now && r.EndDate.AddHours(1) >= now)
+            .OrderBy(r => r.StartDate)
+            .ToList();
+
+        var tempActiveFloors = new List<(int FloorNumber, List<int?> RoomNumbers)>();
+
+        foreach (var reservation in activeReservations)
         {
-            var existingFloor = activeFloors.FirstOrDefault(f => f.FloorNumber == room.FloorNumber);
-            if (existingFloor != default)
+            var room = await RoomService.GetRoomByIdAsync(reservation.RoomId);
+            if (room != null)
             {
-                existingFloor.RoomNumbers.Add(room.RoomNumber);
-            }
-            else
-            {
-                activeFloors.Add((room.FloorNumber, new List<int?> { room.RoomNumber }));
+                var existingFloor = tempActiveFloors.FirstOrDefault(f => f.FloorNumber == room.FloorNumber);
+                if (existingFloor != default)
+                {
+                    existingFloor.RoomNumbers.Add(room.RoomNumber);
+                }
+                else
+                {
+                    tempActiveFloors.Add((room.FloorNumber, new List<int?> { room.RoomNumber }));
+                }
             }
         }
-    }
-    activeFloors = activeFloors.Distinct().ToList();
 
-    int[] reservationCounts = new int[5];
-    for (int i = 0; i < 5; i++)
-    {
-        var targetDate = now.AddDays(i);
-        reservationCounts[i] = Reservations.Count(r => r.StartDate.Date == targetDate);
-    }
+        activeFloors = tempActiveFloors.Select(f => (f.FloorNumber, f.RoomNumbers.Distinct().ToList())).ToList();
 
-    // lijst van opkomende 2 dagen hier maken
-    var labels = new string[2];
-    for (int i = 0; i < 2; i++)
-    {
-        labels[i] = now.AddDays(i).DayOfWeek.ToString();
-    }
-
-    foreach (var label in labels)
-    {
-        _config.Data.Labels.Add(label);
-    }
-
-    var dataset = new BarDataset<int>(reservationCounts) // aantal reserveringen per dag hier
-    {
-        Label = "Reservations",
-        BackgroundColor = new[]
+        int[] reservationCounts = new int[2];
+        for (int i = 0; i < 2; i++)
         {
-            ColorUtil.ColorHexString(255, 99, 132), // als zelfde kleur als side bar (255,87,51)
-            ColorUtil.ColorHexString(255, 99, 132),
+            var targetDate = today.AddDays(i);
+            reservationCounts[i] = Reservations.Count(r => r.StartDate.Date == targetDate);
         }
-    };
 
-    _config.Data.Datasets.Add(dataset);
-}
+        var labels = new string[2];
+        for (int i = 0; i < 2; i++)
+        {
+            labels[i] = today.AddDays(i).DayOfWeek.ToString();
+        }
 
+        foreach (var label in labels)
+        {
+            _config.Data.Labels.Add(label);
+        }
+
+        var dataset = new BarDataset<int>(reservationCounts)
+        {
+            Label = "Reservations",
+            BackgroundColor = new[]
+            {
+                ColorUtil.ColorHexString(255, 99, 132),
+                ColorUtil.ColorHexString(255, 99, 132),
+            }
+        };
+
+        _config.Data.Datasets.Add(dataset);
+    }
 }
