@@ -8,11 +8,11 @@ public class Workspace : IBookable
 {
     [Key] public Guid Id { get; set; }
     public string DeskName { get; }
-    private List<Reservation> reservations = [];
+    public List<Reservation> Reservations = [];
 
     public bool IsAvailable(DateTime startDate, DateTime endDate)
     {
-        foreach (var reservation in reservations)
+        foreach (var reservation in Reservations)
         {
             if (startDate < reservation.EndDate && endDate > reservation.StartDate)
             {
@@ -21,10 +21,5 @@ public class Workspace : IBookable
         }
 
         return true;
-    }
-
-    public bool Book(User user, DateTime startDate, DateTime endDate)
-    {
-        throw new NotImplementedException();
     }
 }
