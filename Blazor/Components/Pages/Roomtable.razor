@@ -7,6 +7,7 @@
 @inject NavigationManager NavigationManager
 @inject UserManager<User> UserManager
 
+<!-- Loop through each distinct floor and display the rooms in a table -->
 @foreach (var floor in Rooms.Select(r => r.FloorNumber).Distinct().Order())
 {
     <h3>Floor @floor</h3>
@@ -27,7 +28,7 @@
         @foreach (var room in Rooms.Where(r => r.FloorNumber == floor).OrderBy(r => r.Wing).ThenBy(r => r.RoomNumber))
         {
             <tr>
-                <td>@(room.IsAvailable(DateTime.Today, DateTime.Today.AddDays(1)) ? "Available" : "Occupied")</td>
+                <td>@(IsRoomAvailable(room) ? "Available" : "Occupied")</td>
                 <td>@room.RoomCode</td>
                 <td>@room.Type</td>
                 <td>@room.Name</td>
@@ -46,52 +47,54 @@
 @code {
     [SupplyParameterFromForm] public Room? Room { get; set; }
     [SupplyParameterFromQuery] public bool Viewing { get; set; }
-    [SupplyParameterFromQuery] public string localStartDateTimeString { get; set; }
-    [SupplyParameterFromQuery] public string localEndDateTimeString { get; set; }
-    
-    private AuthenticationState _authenticationState;
-    
+    [SupplyParameterFromQuery] public string localStartDateTimeString { get; set; } = string.Empty;
+    [SupplyParameterFromQuery] public string localEndDateTimeString { get; set; } = string.Empty;
 
-    private List<Room> Rooms { get; set; } = [];
-    private List<Reservation> Reservations { get; set; } = [];
+    private AuthenticationState _authenticationState;
+    private List<Room> Rooms { get; set; } = new();
+    private List<Reservation> Reservations { get; set; } = new();
 
     protected override async Task OnInitializedAsync()
     {
         Rooms = (await RoomService.GetAllRoomsAsync()).ToList();
         Reservations = (await ReservationService.GetAllReservationsAsync()).ToList();
-        
         _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        Console.WriteLine(localStartDateTimeString);
-
-
-
-
     }
-    
-    private void SelectRoom(Room room) => Room = room;
 
-    private async Task HandleSubmit()
+    private bool IsRoomAvailable(Room room)
     {
-        if (Room == null) return;
-        if (await RoomService.UpdateRoomAsync(Room) == null)
-            await RoomService.CreateRoomAsync(Room);
-        await OnInitializedAsync();
+        if (!DateTime.TryParse(localStartDateTimeString, out var localStartDateTime) ||
+            !DateTime.TryParse(localEndDateTimeString, out var localEndDateTime))
+        {
+            return false;
+        }
+
+        return Reservations.Where(r => r.RoomId == room.Id).All(
+            reservation => localStartDateTime >= reservation.EndDate 
+                           || localEndDateTime <= reservation.StartDate);
     }
 
     private async Task HandleReservation(Room room)
     {
-        Reservation Reservation = new Reservation();
-        DateTime localStartDateTime = DateTime.Parse(localStartDateTimeString);
-        DateTime localEndDateTime = DateTime.Parse(localEndDateTimeString);
-        var user = await UserManager.FindByNameAsync(_authenticationState.User.Identity!.Name!);
-        var userId = Guid.Parse(user!.Id).ToString();
-        Reservation.UserId = userId;
-        Reservation.SetBookable(room, "room");
-        var utcStartDateTime = TimeZoneInfo.ConvertTimeToUtc(localStartDateTime);
-        var utcEndDateTime = TimeZoneInfo.ConvertTimeToUtc(localEndDateTime);
-        Reservation.StartDate = utcStartDateTime;
-        Reservation.EndDate = utcEndDateTime;
-        await ReservationService.CreateReservationAsync(Reservation);
+        if (!DateTime.TryParse(localStartDateTimeString, out var localStartDateTime) ||
+            !DateTime.TryParse(localEndDateTimeString, out var localEndDateTime))
+        {
+            // Handle invalid date input (optional)
+            return;
+        }
+
+        var user = await UserManager.FindByNameAsync(_authenticationState.User.Identity?.Name);
+        if (user == null) return;
+
+        var reservation = new Reservation
+        {
+            UserId = Guid.Parse(user.Id).ToString(),
+            RoomId = room.Id,
+            StartDate = TimeZoneInfo.ConvertTimeToUtc(localStartDateTime),
+            EndDate = TimeZoneInfo.ConvertTimeToUtc(localEndDateTime)
+        };
+
+        await ReservationService.CreateReservationAsync(reservation);
         NavigationManager.NavigateTo("");
     }
 }
