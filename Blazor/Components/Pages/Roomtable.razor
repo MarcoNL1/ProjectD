@@ -61,7 +61,7 @@
         </tr>
         </thead>
         <tbody>
-        @foreach (var room in Rooms.Where(r => r.FloorNumber == floor))
+        @foreach (var room in Rooms.Where(r => r.FloorNumber == floor).OrderBy(r => r.Wing).ThenBy(r => r.RoomNumber))
         {
             <tr>
                 <td>@(room.IsAvailable(DateTime.Today, DateTime.Today.AddDays(1)) ? "Available" : "Occupied")</td>

@@ -30,8 +30,8 @@
 </div>
 
 @code {
-    private List<Reservation> Reservations { get; set; } = new List<Reservation>();
-    private List<(int FloorNumber, List<int?> RoomNumbers)> activeFloors { get; set; } = new List<(int FloorNumber, List<int?> RoomNumbers)>();
+    private List<Reservation> Reservations { get; set; } = new();
+    private List<(int FloorNumber, List<int?> RoomNumbers)> activeFloors { get; set; } = new();
     private BarConfig _config;
 
     protected override void OnInitialized()
