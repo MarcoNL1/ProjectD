@@ -81,5 +81,6 @@
         Reservation.StartDate = utcStartDateTime;
         Reservation.EndDate = utcEndDateTime;
         await ReservationService.CreateReservationAsync(Reservation);
+        NavigationManager.NavigateTo("");
     }
 }
