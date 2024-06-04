@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="app.css"/>
     <link rel="stylesheet" href="Blazor.styles.css"/>
     <link rel="icon" type="image/png" href="favicon.png"/>
+    <!-- Add Azure Maps SDK CSS -->
+    <link rel="stylesheet" href="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.css" type="text/css">
     <HeadOutlet @rendermode="@RenderModeForPage" />
 </head>
 
@@ -22,15 +24,22 @@
 
 <!-- This is the glue between Blazor and Chart.js -->
 <script src="_content/ChartJs.Blazor.Fork/ChartJsBlazorInterop.js"></script>
+
+<!-- Add Azure Maps SDK JavaScript -->
+<script src="https://atlas.microsoft.com/sdk/javascript/mapcontrol/2/atlas.min.js"></script>
+<script src="Map.js"></script> <!-- Add this line to reference the JavaScript file -->
 </body>
 
 </html>
 
 @code {
-    [CascadingParameter]
-    private HttpContext HttpContext { get; set; } = default!;
+[CascadingParameter]
+private HttpContext HttpContext { get; set; } = default!;
 
-    private IComponentRenderMode? RenderModeForPage => HttpContext.Request.Path.StartsWithSegments("/Account")
-        ? null
-        : InteractiveServer;
+private IComponentRenderMode? RenderModeForPage => HttpContext.Request.Path.StartsWithSegments("/Account")
+? null
+: InteractiveServer;
+
+
+
 }

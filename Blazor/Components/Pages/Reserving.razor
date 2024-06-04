@@ -85,7 +85,7 @@
     protected override async Task OnInitializedAsync()
     {
         Reservation = new Reservation();
-        Room = (await RoomService.GetRoomByIdAsync(RoomId))!;
+        Room = (await RoomService.GetRoomByIdAsync(RoomId))!; 
         if (Room == null) NavigationManager.NavigateTo("/roomtable");
         _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         StartHour = DateTime.Now.Hour; // Initialize StartHour to current hour

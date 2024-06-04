@@ -1,4 +1,5 @@
-﻿@page "/"
+﻿@*
+@page "/"
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
@@ -7,35 +8,130 @@
 @inject AppDbContext Context
 
 <PageTitle>Home</PageTitle>
-<h1 style="color: white; background: rgba(255, 64, 0, 0.7); text-align: center; border-radius: 15px; font-family: Verdana, sans-serif ">Welcome to the Eneco Home Page</h1>
+
+<h1 style="color: white; background: rgba(255, 64, 0, 0.7); text-align: center; border-radius: 15px; font-family: Verdana, sans-serif">
+    Welcome to the Eneco Home Page
+</h1>
 
 <style>
-    body{
-    background-image: url('Eneco_building1.jpg');
-    background-position: center;
-    background-size: cover;
-    overflow-x: hidden;
+    body {
+        background-image: url('Eneco_building1.jpg');
+        background-position: center;
+        background-size: cover;
+        overflow-x: hidden;
     }
-    
+
     .top-row.px-4 {
-        background: rgba(255,255,255,80%) !important;
+        background: rgba(255, 255, 255, 80%) !important;
+    }
+
+    .interactable-image {
+        display: block;
+        margin: 20px 0;
+        width: 50%;
+        border: 2px solid white;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: transform 0.3s;
+    }
+
+    .interactable-image:hover {
+        transform: scale(1.04);
+    }
+
+    .image-container {
+        display: flex;
+        align-items: center;
+    }
+
+    .image-container .interactable-image {
+        margin-left: 20px; /* Adjust this value to control the spacing from the left edge */
     }
 </style>
 
+<!-- Interactable Image -->
+<div class="image-container">
+    <img src="MockupFloorplan.png" class="interactable-image" @onclick="OnImageClick" />
+</div>
+
+<!-- Your reservations section -->
 <div>
     <h3>Your reservations</h3>
     @foreach (var reservation in Reservations)
     {
-        <div>
-            <p>@reservation.StartDate.ToLocalTime().ToString("F") @reservation.EndDate.ToLocalTime().ToString("F")</p>
-            <p>@reservation.Bookable?.Id</p>
-        </div>
+    <div>
+        <p>@reservation.StartDate.ToLocalTime().ToString("F") - @reservation.EndDate.ToLocalTime().ToString("F")</p>
+        <p>@reservation.Bookable?.Id</p>
+    </div>
     }
 </div>
 
 @code
 {
-    private List<Reservation> Reservations { get; set; } = [];
+private List<Reservation> Reservations { get; set; } = new List<Reservation>();
+private AuthenticationState _authenticationState;
+private User User { get; set; }
+
+protected override async Task OnInitializedAsync()
+{
+_authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+User = await UserManager.FindByNameAsync(_authenticationState.User.Identity.Name);
+Reservations = await Context.Reservations
+.AsQueryable()
+.Where(r => r.UserId == User.Id)
+.Include(r => r.Room)
+.Include(r => r.Workspace)
+.ToListAsync();
+}
+
+private void OnImageClick()
+{
+// Handle the image click event here
+Console.WriteLine("Image clicked!");
+}
+}
+*@
+
+@*SECOND
+@page "/"
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<User> UserManager
+@inject AppDbContext Context
+
+<PageTitle>Home</PageTitle>
+
+<h1 style="color: white; background: rgba(255, 64, 0, 0.7); text-align: center; border-radius: 15px; font-family: Verdana, sans-serif">
+    Welcome to the Eneco Home Page
+</h1>
+    
+    
+<!-- Interactable Image with Clickable Area -->
+<div class="image-container">
+    <img src="MockupFloorplan.png" class="interactable-image" usemap="#image-map" />
+    <map name="image-map">
+        <area shape="rect" coords="34,44,270,350" href="javascript:void(0);" @onclick="OnArea1Click" alt="Clickable Area 1" />
+        <area shape="rect" coords="300,50,500,250" href="javascript:void(0);" @onclick="OnArea2Click" alt="Clickable Area 2" />
+        <area shape="rect" coords="550,100,750,400" href="javascript:void(0);" @onclick="OnArea3Click" alt="Clickable Area 3" />
+    </map>
+</div>
+
+<!-- Your reservations section -->
+<div>
+    <h3>Your reservations</h3>
+    @foreach (var reservation in Reservations)
+    {
+        <div>
+            <p>@reservation.StartDate.ToLocalTime().ToString("F") - @reservation.EndDate.ToLocalTime().ToString("F")</p>
+            <p>@reservation.Bookable?.Id</p>
+        </div>
+    }
+</div>
+
+@code {
+    private List<Reservation> Reservations { get; set; } = new List<Reservation>();
     private AuthenticationState _authenticationState;
     private User User { get; set; }
 
@@ -43,12 +139,145 @@
     {
         _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         User = await UserManager.FindByNameAsync(_authenticationState.User.Identity.Name);
-        Reservations = Context.Reservations
+        Reservations = await Context.Reservations
             .AsQueryable()
             .Where(r => r.UserId == User.Id)
             .Include(r => r.Room)
             .Include(r => r.Workspace)
-            .ToList();
+            .ToListAsync();
     }
     
+    private void OnArea1Click()
+    {
+        // Handle the click event for Area 1
+        Console.WriteLine("Area 1 clicked!");
+    }
+
+    private void OnArea2Click()
+    {
+        // Handle the click event for Area 2
+        Console.WriteLine("Area 2 clicked!");
+    }
+
+    private void OnArea3Click()
+    {
+        // Handle the click event for Area 3
+        Console.WriteLine("Area 3 clicked!");
+    }
+    
+    
+    private void OnAreaClick()
+    {
+        Console.WriteLine("Clickable area clicked!");
+        // Add your custom logic here
+    }
+}*@
+
+@page "/"
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<User> UserManager
+@inject AppDbContext Context
+
+<PageTitle>Home</PageTitle>
+
+<h1 style="color: white; background: rgba(255, 64, 0, 0.7); text-align: center; border-radius: 15px; font-family: Futura, sans-serif">
+    Welcome to the Eneco Home Page
+</h1>
+
+<h3>Eneco floor plan view</h3>
+
+<!-- Interactable Image with Clickable Area -->
+<div class="image-container">
+    <img src="MockupFloorplan.png" class="interactable-image" usemap="#image-map" />
+    <map name="image-map">
+        <area shape="rect" coords="130,350,250,420" href="javascript:void(0);" @onclick="OnArea1Click" />
+        <area shape="rect" coords="550,350,700,420" href="javascript:void(0);" @onclick="OnArea2Click" />
+        <area shape="rect" coords="330,680,410,740" href="javascript:void(0);" @onclick="OnArea3Click" />
+    </map>
+</div>
+
+
+<!-- Your reservations section -->
+<div>
+    <h3>Your reservations</h3>
+    @foreach (var reservation in Reservations)
+    {
+    <div>
+        <p>@reservation.StartDate.ToLocalTime().ToString("F") - @reservation.EndDate.ToLocalTime().ToString("F")</p>
+        <p>@reservation.Bookable?.Id</p>
+    </div>
+    }
+</div>
+
+@code {
+private List<Reservation> Reservations { get; set; } = new List<Reservation>();
+private AuthenticationState _authenticationState;
+private User User { get; set; }
+
+protected override async Task OnInitializedAsync()
+{
+_authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+User = await UserManager.FindByNameAsync(_authenticationState.User.Identity.Name);
+Reservations = await Context.Reservations
+.AsQueryable()
+.Where(r => r.UserId == User.Id)
+.Include(r => r.Room)
+.Include(r => r.Workspace)
+.ToListAsync();
 }
+
+private void OnArea1Click()
+{
+// Handle the click event for Area 1
+Console.WriteLine("Wing A!");
+}
+
+private void OnArea2Click()
+{
+// Handle the click event for Area 2
+Console.WriteLine("Clicked on wing B");
+}
+
+private void OnArea3Click()
+{
+// Handle the click event for Area 3
+Console.WriteLine("Thats C");
+}
+}
+
+<style>
+    body {
+        background-image: url('Eneco_building1.jpg');
+        background-position: center;
+        background-size: cover;
+        overflow-x: hidden;
+    }
+
+    .top-row.px-4 {
+        background: rgba(255, 255, 255, 80%) !important;
+    }
+
+    .image-container {
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .interactable-image {
+        display: block;
+        width: 50%; 
+        border: 6px solid #ff5733;
+        border-radius: 10px;
+        transition: transform 1.3s ease-out; /* Apply transition to transform property */
+    }
+
+    .interactable-image:hover {
+        transform: scale(1.05);
+        
+    }
+
+</style>
+
