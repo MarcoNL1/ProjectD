@@ -191,16 +191,15 @@ Console.WriteLine("Image clicked!");
 <button @onclick="() => HandleReservation()">Reserve here</button>
 <h3>Eneco floor plan view</h3>
 
-<!-- Interactable Image with Clickable Area -->
+<!-- Interactable Image with Clickable Area, @onclick="() => OnAreaClick('A')" alt="Wing A" /> -->
 <div class="image-container">
     <img src="MockupFloorplan.png" class="interactable-image" usemap="#image-map" />
     <map name="image-map">
-        <area shape="rect" coords="130,350,250,420" href="javascript:void(0);" @onclick="OnArea1Click" />
+        <area shape="rect" coords="130,350,250,420" href="http://localhost:5257/reservation/?roomId=1c958aa3-fb21-42e1-af18-5e3759d49d0b" @onclick="OnArea1Click" />
         <area shape="rect" coords="550,350,700,420" href="javascript:void(0);" @onclick="OnArea2Click" />
         <area shape="rect" coords="330,680,410,740" href="javascript:void(0);" @onclick="OnArea3Click" />
     </map>
 </div>
-
 
 <!-- Your reservations section -->
 <div>
@@ -238,20 +237,21 @@ private async Task HandleReservation()
 
 private void OnArea1Click()
 {
-// Handle the click event for Area 1
+// Handling click events:
 Console.WriteLine("Wing A!");
+
+//NavigationManager.NavigateTo($"/reservation?wing={Room.Wing}");
+
 }
 
 private void OnArea2Click()
 {
-// Handle the click event for Area 2
 Console.WriteLine("Clicked on wing B");
 }
 
 private void OnArea3Click()
 {
-// Handle the click event for Area 3
-Console.WriteLine("Thats C");
+Console.WriteLine("That's wing C");
 }
 }
 
@@ -278,7 +278,7 @@ Console.WriteLine("Thats C");
         width: 50%; 
         border: 6px solid #ff5733;
         border-radius: 10px;
-        transition: transform 1.3s ease-out; /* Apply transition to transform property */
+        transition: transform 1.3s ease-out;
     }
 
     .interactable-image:hover {
