@@ -2,51 +2,6 @@
 @inject RoomService RoomService
 @inject NavigationManager NavigationManager
 
-<button @onclick="() => Room = new Room()">New Room</button>
-@if (Room is not null)
-{
-    <EditForm Model="Room" OnValidSubmit="HandleSubmit">
-        <label>
-            FloorNumber:
-            <InputSelect @bind-Value="Room!.FloorNumber">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-            </InputSelect>
-        </label>
-        <label>
-            Wing:
-            <InputSelect @bind-Value="Room!.Wing">
-                <option>Select an option</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-            </InputSelect>
-        </label>
-        <label>
-            Room number:
-            <InputNumber @bind-Value="Room!.RoomNumber"/>
-        </label>
-        <label>
-            Name:
-            <InputText @bind-Value="Room!.Name"/>
-        </label>
-        <label>
-            Type:
-            <InputText @bind-Value="Room!.Type"/>
-        </label>
-        <label>
-            Max Workspaces:
-            <input type="number" min="0" @bind="Room!.MaxWorkspaces"/>
-        </label>
-        <label>
-            Max Reservations:
-            <input type="number" min="0" @bind="Room!.MaxReservations"/>
-        </label>
-        <button type="submit">Save</button>
-        <button @onclick="() => Room = null">Cancel</button>
-    </EditForm>
-}
 @foreach (var floor in Rooms.Select(r => r.FloorNumber).Distinct().Order())
 {
     <h3>Floor @floor</h3>
