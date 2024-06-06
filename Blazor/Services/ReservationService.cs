@@ -28,6 +28,19 @@ public class ReservationService(IDbContextFactory<AppDbContext> contextFactory)
                 .Include(r => r.User);
         return await query.ToListAsync();
     }
+    
+    public async Task<List<Reservation>> GetAllReservations(bool withBookable = false)
+    {
+        await using var context = await contextFactory.CreateDbContextAsync();
+        var query = context.Reservations.AsQueryable();
+        if (withBookable)
+            query = query
+                .Include(r => r.Room)
+                .Include(r => r.Workspace)
+                .Include(r => r.User);
+        return await query.ToListAsync();
+    }
+    
 
     public async Task<Reservation> CreateReservationAsync(Reservation reservation)
     {

@@ -13,8 +13,8 @@
     <td>@CurrentUser.Email</td>
     <td>
         <div class="actions">
-            <button @onclick="() => MakeAdmin(CurrentUser)">Make admin</button>
-            <button @onclick="() => RemoveAdmin(CurrentUser)">Remove admin</button>
+            <button @onclick="() => { SelectedUser = CurrentUser; makeAdminModalVisible = true;}">Make admin</button>
+            <button @onclick="() => { SelectedUser = CurrentUser; removeAdminModalVisible = true; }">Remove admin</button>
             <button @onclick="() => Delete(CurrentUser)">Delete</button>
         </div>
     </td>
@@ -27,6 +27,40 @@
     </tr>
 }
 
+@if (SelectedUser is not null && makeAdminModalVisible)
+{
+<div class="modal fade show d-block" tabindex="-1" id="makeAdminModal" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>Are you sure you want to make @SelectedUser.Email admin?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="() => { SelectedUser = null; makeAdminModalVisible = false; }">Close</button>
+                <button type="button" class="btn btn-success" @onclick="() => { MakeAdmin(SelectedUser); SelectedUser = null; }">Make admin</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+@if (SelectedUser is not null && removeAdminModalVisible)
+{
+<div class="modal fade show d-block" tabindex="-1" id="removeAdminModal" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <p>Are you sure you want to remove admin role for @SelectedUser.Email?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" @onclick="() => { SelectedUser = null; removeAdminModalVisible = false; }">Close</button>
+                <button type="button" class="btn btn-danger" @onclick="() => { RemoveAdmin(SelectedUser); SelectedUser = null; }">Remove admin</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
 @code {
     [Parameter]
     public User CurrentUser { get; set; }
@@ -35,6 +69,12 @@
     public EventCallback<User> OnUserDeleted { get; set; }
 
     private string ErrorMessage { get; set; }
+    
+    private User? SelectedUser { get; set; }
+    
+    private bool makeAdminModalVisible = false;
+    
+    private bool removeAdminModalVisible = false;
 
     private async Task Delete(User user)
     {

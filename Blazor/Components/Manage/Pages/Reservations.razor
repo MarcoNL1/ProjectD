@@ -6,8 +6,12 @@
 @inject UserManager<User> UserManager
 <h3>Reservations</h3>
 
+<div>
+    <input @bind="SearchTerm" style="margin-bottom: 8px" placeholder="Search by user or room" @oninput="OnSearchTermChanged" />
+</div>
+
 <div class="row row-cols-1 row-cols-md-2 row-cols-xxl-3 g-3">
-    @foreach (var reservation in ReservationList)
+    @foreach (var reservation in FilteredReservations)
     {
         <div class="col">
             <div class="card">
@@ -57,20 +61,35 @@
     private Reservation? SelectedReservation { get; set; }
 
     private AuthenticationState _authenticationState;
+    
+    private string SearchTerm { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = await UserManager.FindByNameAsync(_authenticationState.User.Identity.Name);
-        ReservationList = (await ReservationService.GetAllReservationsByUserId(user.Id, true)).OrderBy(r => r.StartDate).ToList();
+        ReservationList = (await ReservationService.GetAllReservations(withBookable: true)).OrderBy(r => r.StartDate).ToList();
     }
+    
+    private IEnumerable<Reservation> FilteredReservations => ReservationList
+        .Where(r => string.IsNullOrWhiteSpace(SearchTerm) || 
+                    (r.User != null && r.User.UserName.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    (r.Room != null && r.Room.RoomCode.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    (r.Workspace != null && r.Workspace.DeskName.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase)));
 
     private async Task CancelReservation()
     {
-        await ReservationService.DeleteReservationAsync(SelectedReservation.Id);
-        ReservationList.Remove(SelectedReservation);
-        SelectedReservation = null;
+        if (SelectedReservation != null)
+        {
+            await ReservationService.DeleteReservationAsync(SelectedReservation.Id);
+            ReservationList.Remove(SelectedReservation);
+            SelectedReservation = null;
+        }
     }
-
+    
+    private void OnSearchTermChanged(ChangeEventArgs e)
+    {
+        SearchTerm = e.Value?.ToString() ?? string.Empty;
+        StateHasChanged();
+    }
 }
-
