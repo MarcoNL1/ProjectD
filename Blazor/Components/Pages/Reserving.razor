@@ -195,7 +195,11 @@
             ErrorMessage = "The end time must be after the start time.";
             return;
         }
+        
+        var room = await RoomService.GetRoomByIdAsync(Reservation.RoomId);
+        room.Count++;
+        await RoomService.UpdateRoomAsync(room);
+        
         NavigationManager.NavigateTo($"/roomtable/?Viewing=false&localStartDateTimeString={localStartDateTime}&localEndDateTimeString={localEndDateTime}");
-
     }
 }
