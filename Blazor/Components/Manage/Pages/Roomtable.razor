@@ -44,7 +44,7 @@
         <button @onclick="() => CurrentRoom = null">Cancel</button>
     </EditForm>
 }
-@foreach (var floor in Rooms.Select(r => r.FloorNumber).Distinct().Order())
+@foreach (var floor in _rooms.Select(r => r.FloorNumber).Distinct().Order())
 {
     <h3>Floor @floor</h3>
     <table class="table table-striped">
@@ -58,7 +58,7 @@
         </tr>
         </thead>
         <tbody>
-        @foreach (var room in Rooms.Where(r => r.FloorNumber == floor))
+        @foreach (var room in _rooms.Where(r => r.FloorNumber == floor))
         {
             <tr @onclick:preventDefault @onclick="() => SelectRoom(room)">
                 <td>@(room.IsAvailable(DateTime.Today, DateTime.Today.AddDays(1)) ? "Available" : "Occupied")</td>
@@ -75,12 +75,12 @@
 @code {
     [SupplyParameterFromForm] public Data.Room? CurrentRoom { get; set; }
 
-    private List<Data.Room> Rooms { get; set; } = [];
+    private List<Data.Room> _rooms { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
         CurrentRoom = null;
-        Rooms = (await RoomService.GetAllRoomsAsync()).ToList();
+        _rooms = (await RoomService.GetAllRoomsAsync()).ToList();
     }
 
     private void SelectRoom(Data.Room room) => CurrentRoom = room;

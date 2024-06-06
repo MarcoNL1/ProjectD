@@ -24,7 +24,8 @@ public class ReservationService(IDbContextFactory<AppDbContext> contextFactory)
         if (withBookable)
             query = query
                 .Include(r => r.Room)
-                .Include(r => r.Workspace);
+                .Include(r => r.Workspace)
+                .Include(r => r.User);
         return await query.ToListAsync();
     }
 
