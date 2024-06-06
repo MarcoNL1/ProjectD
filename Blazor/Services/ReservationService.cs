@@ -22,7 +22,7 @@ public class ReservationService(IDbContextFactory<AppDbContext> contextFactory)
         await using var context = await contextFactory.CreateDbContextAsync();
         var query = context.Reservations.Where(r => r.UserId == userId);
         if (withBookable)
-            query
+            query = query
                 .Include(r => r.Room)
                 .Include(r => r.Workspace);
         return await query.ToListAsync();
