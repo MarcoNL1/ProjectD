@@ -196,10 +196,6 @@
             return;
         }
         
-        var room = await RoomService.GetRoomByIdAsync(Reservation.RoomId);
-        room.Count++;
-        await RoomService.UpdateRoomAsync(room);
-        
         NavigationManager.NavigateTo($"/roomtable/?Viewing=false&localStartDateTimeString={localStartDateTime}&localEndDateTimeString={localEndDateTime}");
     }
 }

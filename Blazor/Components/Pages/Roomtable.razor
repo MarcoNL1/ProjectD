@@ -95,6 +95,14 @@
         };
 
         await ReservationService.CreateReservationAsync(reservation);
+        
+        room.Count++;
+        await RoomService.UpdateRoomAsync(room);
+        var index = Rooms.FindIndex(r => r.Id == room.Id);
+        if (index != -1)
+        {
+            Rooms[index] = room;
+        }
         NavigationManager.NavigateTo("");
     }
 }
