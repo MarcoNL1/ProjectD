@@ -196,13 +196,7 @@
             return;
         }
         
-        var roomId = Reservation.RoomId; // Adjust this if the property name is different
-        var room = await RoomService.GetRoomByIdAsync(roomId);
-        if (room == null)
-        {
-            ErrorMessage = "The selected room does not exist.";
-            return;
-        }
+        var room = await RoomService.GetRoomByIdAsync(Reservation.RoomId);
         room.Count++;
         await RoomService.UpdateRoomAsync(room);
         
