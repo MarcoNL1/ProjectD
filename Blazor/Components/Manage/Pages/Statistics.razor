@@ -15,32 +15,192 @@
     <Chart Config="_config"></Chart>
     
     <h3>Active Floors</h3>
-    @foreach (var floor in activeFloors)
+    @if (activeFloors.Any())
     {
-        <div>
-            <p>Floor: @floor.FloorNumber</p>
-            <ul>
-                @foreach (var roomNumber in floor.RoomNumbers)
-                {
-                    <li>Room: @roomNumber</li>
-                }
-            </ul>
-        </div>
+        @foreach (var floor in activeFloors)
+        {
+            <div>
+                <p>Floor: @floor.FloorNumber</p>
+                <ul>
+                    @foreach (var roomNumber in floor.RoomNumbers.Order())
+                    {
+                        <li>Room: @roomNumber</li>
+                    }
+                </ul>
+            </div>
+        }
     }
+    else
+    {
+        <p>No active floors right now</p>
+    }
+    <h3>Reservation Count</h3>
+    
+    <div>
+        <label>Select Table:</label>
+        <select @bind="SelectedTable">
+            <option value="Rooms">Rooms</option>
+            <option value="Wings">Wings</option>
+            <option value="Floors">Floors</option>
+        </select>
+    </div>
+    
+    <div>
+        @if (SelectedTable == "Rooms")
+        {
+            <h3>Rooms</h3>
+            <div>
+                <button @onclick="ToggleFilterMenu">Toggle Filter Menu</button>
+            </div>
+            @if (ShowFilterMenu)
+            {
+                <div>
+                    <label>Filter by Floor Number:</label>
+                    <input type="number" @bind="FilterFloorNumber" />
+                    <label>Filter by Wing:</label>
+                    <input type="text" @bind="FilterWing" maxlength="1" />
+                    <label>Filter by Room Number:</label>
+                    <input type="number" @bind="FilterRoomNumber" />
+                    <button @onclick="ApplyFilters">Filter</button>
+                    <button @onclick="ClearFilters">Clear Filters</button>
+                </div>
+            }
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Room Code</th>
+                        <th @onclick="ToggleCountOrder">Count</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                @if (CountDescending)
+                {
+                    @foreach (var room in FilteredRooms.OrderByDescending(r => r.Count).ThenBy(r => r.FloorNumber).ThenBy(r => r.RoomNumber))
+                    {
+                        <tr>
+                            <td>@room.RoomCode</td>
+                            <td>@room.Count</td>
+                        </tr>
+                    }
+                }
+                @if(!CountDescending)
+                {
+                    @foreach (var room in FilteredRooms.OrderBy(r => r.Count).ThenBy(r => r.FloorNumber).ThenBy(r => r.RoomNumber))
+                    {
+                        <tr>
+                            <td>@room.RoomCode</td>
+                            <td>@room.Count</td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        }
+        
+        @if (SelectedTable == "Wings")
+            {
+            <h3>Wings</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Wing</th>
+                        <th @onclick="ToggleCountOrder">Total Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (CountDescending)
+                {
+                    @foreach (var wingCount in WingCounts.OrderByDescending(r => r.Count))
+                    {
+                        <tr>
+                            <td>@wingCount.Wing</td>
+                            <td>@wingCount.Count</td>
+                        </tr>
+                    }
+                }
+                @if (!CountDescending)
+                    {
+                        @foreach (var wingCount in WingCounts.OrderBy(r => r.Count))
+                        {
+                            <tr>
+                                <td>@wingCount.Wing</td>
+                                <td>@wingCount.Count</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+            }
+                
+        @if (SelectedTable == "Floors")
+        {
+        <h3>Floors</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Floor Number</th>
+                    <th @onclick="ToggleCountOrder">Total Count</th>
+                </tr>
+            </thead>
+            <tbody>
+            @if (CountDescending)
+            {
+                @foreach (var floorCount in FloorCounts.OrderByDescending(r => r.Count))
+                {
+                    <tr>
+                        <td>@floorCount.FloorNumber</td>
+                        <td>@floorCount.Count</td>
+                    </tr>
+                }
+            }
+            @if (!CountDescending)
+                {
+                    @foreach (var floorCount in FloorCounts.OrderBy(r => r.Count))
+                    {
+                        <tr>
+                            <td>@floorCount.FloorNumber</td>
+                            <td>@floorCount.Count</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+        }
+    </div>
 </div>
 
 @code {
     private List<Reservation> Reservations { get; set; } = new();
     private List<(int FloorNumber, List<int?> RoomNumbers)> activeFloors { get; set; } = new();
+    private List<Data.Room> Rooms { get; set; } = new();
+    private List<Data.Room> FilteredRooms { get; set; } = new();
+    private List<(string Wing, int Count)> WingCounts { get; set; } = new();
+    private List<(int FloorNumber, int Count)> FloorCounts { get; set; } = new();
     private BarConfig _config;
 
-    protected override void OnInitialized()
+    private string _selectedTable = "Rooms";
+    private string SelectedTable
     {
+        get => _selectedTable;
+        set
+        {
+            if (_selectedTable != value)
+            {
+                _selectedTable = value;
+                CountDescending = true;
+            }
+        }
     }
+    private bool ShowFilterMenu { get; set; }
+    private int? FilterFloorNumber { get; set; }
+    private string FilterWing { get; set; }
+    private int? FilterRoomNumber { get; set; }
+    private bool CountDescending { get; set; } = true;
 
     protected override async Task OnInitializedAsync()
     {
-        _config = new BarConfig
+         _config = new BarConfig
         {
             Options = new BarOptions
             {
@@ -130,5 +290,51 @@
         };
 
         _config.Data.Datasets.Add(dataset);
+
+        Rooms = (await RoomService.GetAllRoomsAsync()).ToList();
+        FilteredRooms = new List<Data.Room>(Rooms);
+        
+        WingCounts = Rooms
+            .GroupBy(r => r.Wing)
+            .Select(group => (group.Key, group.Sum(r => r.Count)))
+            .ToList();
+
+        
+        FloorCounts = Rooms
+            .GroupBy(r => r.FloorNumber)
+            .Select(group => (group.Key, group.Sum(r => r.Count)))
+            .ToList();
+    }
+
+    private void ToggleFilterMenu()
+    {
+        if (ShowFilterMenu) ShowFilterMenu = false;
+        else if (!ShowFilterMenu) ShowFilterMenu = true;
+    }
+
+    private void ApplyFilters()
+    {
+        FilteredRooms = Rooms
+            .Where(r => (!FilterFloorNumber.HasValue || r.FloorNumber == FilterFloorNumber.Value)
+                        && (string.IsNullOrEmpty(FilterWing) || r.Wing.Equals(FilterWing, StringComparison.OrdinalIgnoreCase))
+                        && (!FilterRoomNumber.HasValue || r.RoomNumber == FilterRoomNumber.Value))
+            .OrderBy(r => r.FloorNumber)
+            .ThenBy(r => r.RoomNumber)
+            .ToList();
+        
+    }
+
+    private void ClearFilters()
+    {
+        FilterFloorNumber = null;
+        FilterWing = "";
+        FilterRoomNumber = null;
+        ApplyFilters();
+    }
+
+    private void ToggleCountOrder()
+    {
+        if (CountDescending) CountDescending = false;
+        else if (!CountDescending) CountDescending = true;
     }
 }

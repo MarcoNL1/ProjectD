@@ -195,7 +195,17 @@
             ErrorMessage = "The end time must be after the start time.";
             return;
         }
+        
+        var roomId = Reservation.RoomId; // Adjust this if the property name is different
+        var room = await RoomService.GetRoomByIdAsync(roomId);
+        if (room == null)
+        {
+            ErrorMessage = "The selected room does not exist.";
+            return;
+        }
+        room.Count++;
+        await RoomService.UpdateRoomAsync(room);
+        
         NavigationManager.NavigateTo($"/roomtable/?Viewing=false&localStartDateTimeString={localStartDateTime}&localEndDateTimeString={localEndDateTime}");
-
     }
 }
