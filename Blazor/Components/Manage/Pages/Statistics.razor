@@ -72,8 +72,17 @@
                 <thead>
                     <tr>
                         <th>Room Code</th>
-                        <th @onclick="ToggleCountOrder">Reservation Count</th>
-
+                        <th @onclick="ToggleCountOrder">
+                            Reservation Count 
+                            @if (CountDescending)
+                            {
+                                <span>&darr;</span> 
+                            }
+                            else
+                            {
+                                <span>&uarr;</span>
+                            }
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -107,7 +116,17 @@
                 <thead>
                     <tr>
                         <th>Wing</th>
-                        <th @onclick="ToggleCountOrder">Reservation Count</th>
+                        <th @onclick="ToggleCountOrder">
+                            Reservation Count 
+                            @if (CountDescending)
+                            {
+                                <span>&darr;</span> 
+                            }
+                            else
+                            {
+                                <span>&uarr;</span> 
+                            }
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -141,7 +160,17 @@
                 <thead>
                     <tr>
                         <th>Floor Number</th>
-                        <th @onclick="ToggleCountOrder">Reservation Count</th>
+                        <th @onclick="ToggleCountOrder">
+                            Reservation Count 
+                            @if (CountDescending)
+                            {
+                                <span>&darr;</span> 
+                            }
+                            else
+                            {
+                                <span>&uarr;</span> 
+                            }
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -179,7 +208,17 @@
                 <thead>
                     <tr>
                         <th>Email</th>
-                        <th @onclick="ToggleCountOrder">Reservation Count</th>
+                        <th @onclick="ToggleCountOrder">
+                            Reservation Count 
+                            @if (CountDescending)
+                            {
+                                <span>&darr;</span>
+                            }
+                            else
+                            {
+                                <span>&uarr;</span>
+                            }
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
