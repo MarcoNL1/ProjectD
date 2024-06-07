@@ -203,6 +203,7 @@
             <div>
                 <label>Search Username:</label>
                 <input type="text" @bind="UserSearchTerm" @oninput="ApplyUserFilter" />
+                <button @onclick="ClearUserFilters">Clear Filters</button>
             </div>
             <table class="table">
                 <thead>
@@ -431,5 +432,12 @@
             .Where(u => u.UserName.ToLower().StartsWith(UserSearchTerm))
             .OrderByDescending(u => u.ReservationCount)
             .ToList();
+    }
+
+    private void ClearUserFilters()
+    {
+        UserSearchTerm = "";
+        var changeEventArgs = new ChangeEventArgs { Value = "" };
+        ApplyUserFilter(changeEventArgs);    
     }
 }
