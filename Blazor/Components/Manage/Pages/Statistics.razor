@@ -5,8 +5,11 @@
 @using ChartJs.Blazor.Common
 @using ChartJs.Blazor.Common.Axes
 @using ChartJs.Blazor.Common.Axes.Ticks
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
 @inject ReservationService ReservationService
 @inject RoomService RoomService
+@inject UserManager<User> UserManager
 
 <PageTitle>Statistics</PageTitle>
 
@@ -34,7 +37,7 @@
     {
         <p>No active floors right now</p>
     }
-    <h3>Reservation Count</h3>
+    <h3>All Time Reservation Count</h3>
     
     <div>
         <label>Select Table:</label>
@@ -42,6 +45,7 @@
             <option value="Rooms">Rooms</option>
             <option value="Wings">Wings</option>
             <option value="Floors">Floors</option>
+            <option value="Users">Users</option>
         </select>
     </div>
     
@@ -68,7 +72,7 @@
                 <thead>
                     <tr>
                         <th>Room Code</th>
-                        <th @onclick="ToggleCountOrder">Count</th>
+                        <th @onclick="ToggleCountOrder">Reservation Count</th>
 
                     </tr>
                 </thead>
@@ -103,7 +107,7 @@
                 <thead>
                     <tr>
                         <th>Wing</th>
-                        <th @onclick="ToggleCountOrder">Total Count</th>
+                        <th @onclick="ToggleCountOrder">Reservation Count</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -133,27 +137,17 @@
                 
         @if (SelectedTable == "Floors")
         {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Floor Number</th>
-                    <th @onclick="ToggleCountOrder">Total Count</th>
-                </tr>
-            </thead>
-            <tbody>
-            @if (CountDescending)
-            {
-                @foreach (var floorCount in FloorCounts.OrderByDescending(r => r.Count))
-                {
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>@floorCount.FloorNumber</td>
-                        <td>@floorCount.Count</td>
+                        <th>Floor Number</th>
+                        <th @onclick="ToggleCountOrder">Reservation Count</th>
                     </tr>
-                }
-            }
-            @if (!CountDescending)
+                </thead>
+                <tbody>
+                @if (CountDescending)
                 {
-                    @foreach (var floorCount in FloorCounts.OrderBy(r => r.Count))
+                    @foreach (var floorCount in FloorCounts.OrderByDescending(r => r.Count))
                     {
                         <tr>
                             <td>@floorCount.FloorNumber</td>
@@ -161,8 +155,56 @@
                         </tr>
                     }
                 }
-            </tbody>
-        </table>
+                @if (!CountDescending)
+                    {
+                        @foreach (var floorCount in FloorCounts.OrderBy(r => r.Count))
+                        {
+                            <tr>
+                                <td>@floorCount.FloorNumber</td>
+                                <td>@floorCount.Count</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        }
+        
+         @if (SelectedTable == "Users")
+        {
+            <div>
+                <label>Search Username:</label>
+                <input type="text" @bind="UserSearchTerm" @oninput="ApplyUserFilter" />
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th @onclick="ToggleCountOrder">Reservation Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (CountDescending)
+                {
+                    @foreach (var user in FilteredUsers.OrderByDescending(u => u.ReservationCount).ThenBy(u => u.UserName))
+                    {
+                        <tr>
+                            <td>@user.Email</td>
+                            <td>@user.ReservationCount</td>
+                        </tr>
+                    }
+                }
+                @if (!CountDescending)
+                {
+                    @foreach (var user in FilteredUsers.OrderBy(u => u.ReservationCount).ThenBy(u => u.UserName))
+                    {
+                        <tr>
+                            <td>@user.Email</td>
+                            <td>@user.ReservationCount</td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
         }
     </div>
 </div>
@@ -174,7 +216,12 @@
     private List<Data.Room> FilteredRooms { get; set; } = new();
     private List<(string Wing, int Count)> WingCounts { get; set; } = new();
     private List<(int FloorNumber, int Count)> FloorCounts { get; set; } = new();
+    private List<User> Users { get; set; } = new();
+    private List<User> FilteredUsers { get; set; } = new();
+    
     private BarConfig _config;
+
+    private string SelectedGraph = "TotalReservations";
 
     private string _selectedTable = "Rooms";
     private string SelectedTable
@@ -194,10 +241,11 @@
     private string FilterWing { get; set; }
     private int? FilterRoomNumber { get; set; }
     private bool CountDescending { get; set; } = true;
+    private string UserSearchTerm { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-         _config = new BarConfig
+        _config = new BarConfig
         {
             Options = new BarOptions
             {
@@ -231,7 +279,8 @@
             .Where(r => r.StartDate.Date >= today && r.StartDate.Date <= today.AddDays(1))
             .OrderBy(r => r.StartDate)
             .ToList();
-
+        
+        
         var activeReservations = (await ReservationService.GetAllReservationsAsync())
             .Where(r => r.StartDate.AddHours(2) <= now && r.EndDate.AddHours(2) >= now)
             .OrderBy(r => r.StartDate)
@@ -257,7 +306,7 @@
         }
 
         activeFloors = tempActiveFloors.Select(f => (f.FloorNumber, f.RoomNumbers.Distinct().ToList())).ToList();
-
+        
         int[] reservationCounts = new int[2];
         for (int i = 0; i < 2; i++)
         {
@@ -301,6 +350,9 @@
             .GroupBy(r => r.FloorNumber)
             .Select(group => (group.Key, group.Sum(r => r.Count)))
             .ToList();
+        
+        Users = (await UserManager.Users.ToListAsync()).OrderByDescending(u => u.ReservationCount).ToList();
+        FilteredUsers = new List<User>(Users);
     }
 
     private void ToggleFilterMenu()
@@ -333,5 +385,14 @@
     {
         if (CountDescending) CountDescending = false;
         else if (!CountDescending) CountDescending = true;
+    }
+    
+    private void ApplyUserFilter(ChangeEventArgs e)
+    {
+        UserSearchTerm = e.Value.ToString().ToLower();
+        FilteredUsers = Users
+            .Where(u => u.UserName.ToLower().StartsWith(UserSearchTerm))
+            .OrderByDescending(u => u.ReservationCount)
+            .ToList();
     }
 }

@@ -103,6 +103,10 @@
         {
             Rooms[index] = room;
         }
+        
+        user.ReservationCount++;
+        await UserManager.UpdateAsync(user);
+        
         NavigationManager.NavigateTo("");
     }
 }

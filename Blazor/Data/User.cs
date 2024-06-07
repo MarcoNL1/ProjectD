@@ -10,4 +10,5 @@ public class User : IdentityUser
     {
         return new Reservation();
     }
+    public int ReservationCount { get; set; }
 }
