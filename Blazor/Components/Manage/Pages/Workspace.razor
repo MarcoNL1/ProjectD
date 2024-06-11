@@ -1,0 +1,76 @@
+@page "/Manage/Workspace"
+@inject WorkspaceService WorkspaceService
+@inject RoomService RoomService
+
+<PageTitle>Workspaces</PageTitle>
+
+<h1>Workspaces</h1>
+
+<button @onclick="NewWorkspace" class="btn btn-dark">New Workspace</button>
+@if (CurrentWorkspace is not null)
+{
+    <EditForm Model="CurrentWorkspace" OnValidSubmit="HandleSubmit">
+        <label>
+            Desk name:
+            <InputText @bind-Value="CurrentWorkspace!.DeskName"/>
+        </label>
+        <label>
+            Room:
+            <InputSelect @bind-Value="CurrentWorkspace.RoomId">
+                <option>Select an option</option>
+                @foreach (var room in Rooms)
+                {
+                    <option value="@room.Id">@room.RoomCode</option>
+                }
+            </InputSelect>
+        </label>
+        <button type="submit" class="btn btn-outline-success">Save</button>
+    </EditForm>
+}
+<div class="d-flex flex-wrap gap-5">
+
+    @foreach (var workspace in Workspaces)
+    {
+        
+        <div>
+            <div>
+                <div class="title">
+                    <h5>@workspace.DeskName</h5>
+                </div>
+                <button class="btn btn-danger" @onclick="() => DeleteWorkspace(workspace.Id)">Delete</button>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<Data.Workspace> Workspaces { get; set; } = [];
+    private List<Room> Rooms { get; set; } = [];
+    private Data.Workspace? CurrentWorkspace { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        Workspaces = (await WorkspaceService.GetAllWorkspacesAsync()).ToList();
+    }
+
+    private async Task NewWorkspace()
+    {
+        CurrentWorkspace = new Data.Workspace();
+        Rooms = (await RoomService.GetAllRoomsAsync()).ToList();
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (CurrentWorkspace == null) return;
+        if (await WorkspaceService.UpdateWorkspaceAsync(CurrentWorkspace) == null)
+            await WorkspaceService.CreateWorkspaceAsync(CurrentWorkspace);
+        await OnInitializedAsync();
+        CurrentWorkspace = null;
+    }
+
+    private async Task DeleteWorkspace(Guid id)
+    {
+        await WorkspaceService.DeleteWorkspaceAsync(id);
+        await OnInitializedAsync();
+    }
+}
