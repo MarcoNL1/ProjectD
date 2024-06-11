@@ -1,4 +1,4 @@
-﻿@page "/roomtable"
+﻿@page "/Rooms"
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Identity
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -8,7 +8,7 @@
 @inject UserManager<User> UserManager
 
 <!-- Loop through each distinct floor and display the rooms in a table -->
-@foreach (var floor in BookableList.Select(r => r.FloorNumber).Distinct().Order())
+@foreach (var floor in RoomList.Select(r => r.FloorNumber).Distinct().Order())
 {
     <h3>Floor @floor</h3>
     <table class="table table-striped">
@@ -20,37 +20,66 @@
             <th>Room Name</th>
             @if (!Viewing)
             {
-                <th>Actions</th>
+                <th width="250px">Actions</th>
             }
         </tr>
         </thead>
         <tbody>
-        @foreach (var bookable in BookableList.Where(r => r.FloorNumber == floor).OrderBy(r => r.Wing).ThenBy(r => r.RoomNumber))
+        @foreach (var room in RoomList.Where(r => r.FloorNumber == floor).OrderBy(r => r.Wing).ThenBy(r => r.RoomNumber))
         {
             <tr>
-                <td>@(IsRoomAvailable(bookable) ? "Available" : "Occupied")</td>
-
-                @switch (bookable)
-                {
-                    case Room room:
-                        <td>@room.RoomCode</td>
-                        <td>@room.Type</td>
-                        <td>@room.Name</td>
-                        break;
-                    case Workspace workspace:
-                        <td></td>
-                        <td>Workspace</td>
-                        <td>@workspace.DeskName</td>
-                        break;
-                }
-
-                @if (!Viewing)
+                <td>@(IsRoomAvailable(room) ? "Available" : "Occupied")</td>
+                <td>@room.RoomCode</td>
+                <td>@room.Type</td>
+                <td>@room.Name</td>
+                @if (!Viewing && !room.HasWorkspaces)
                 {
                     <td>
-                        <button @onclick="() => HandleReservation(bookable)">Reserve Workspace</button>
+                        <button type="button" class="btn btn-outline-success" @onclick="() => HandleReservation(room)">Reserve Workspace</button>
                     </td>
                 }
             </tr>
+            @code {
+                bool open = false;
+            }
+            @if (room.Workspaces.Count > 0)
+            {
+                <tr>
+                    <td colspan="100%">
+                        <table class="table mb-0">
+                            <thead>
+                            <tr>
+                                <th>Desk name</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                @if (!Viewing)
+                                {
+                                    <th width="250px"></th>
+                                }
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @foreach (var workspace in room.Workspaces)
+                            {
+                                <tr>
+                                    <td>@workspace.DeskName</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    @if (!Viewing)
+                                    {
+                                        <td>
+                                            <button type="button" class="btn btn-outline-success" @onclick="() => HandleReservation(workspace)">Reserve Workspace</button>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            }
         }
         </tbody>
     </table>
@@ -61,13 +90,13 @@
     [SupplyParameterFromQuery] public string localEndDateTimeString { get; set; } = string.Empty;
 
     private AuthenticationState _authenticationState;
-    private List<IBookable> BookableList { get; set; } = new();
-    private List<Reservation> Reservations { get; set; } = new();
+    private List<Room> RoomList { get; set; } = [];
+    private List<Reservation> Reservations { get; set; } = [];
     private bool Viewing { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        BookableList = (await RoomService.GetAllRoomsAsync()).Cast<IBookable>().ToList();
+        RoomList = (await RoomService.GetAllRoomsAsync()).ToList();
         Reservations = (await ReservationService.GetAllReservationsAsync()).ToList();
         _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         Viewing = string.IsNullOrEmpty(localStartDateTimeString) && string.IsNullOrEmpty(localEndDateTimeString);
@@ -107,14 +136,9 @@
         };
 
         await ReservationService.CreateReservationAsync(reservation);
-        
-        var index = BookableList.FindIndex(b => b.Id == bookable.Id);
-        if (index != -1)
-        {
-            BookableList[index] = bookable;
-        }
-        
+
         NavigationManager.NavigateTo("");
     }
 
 }
+

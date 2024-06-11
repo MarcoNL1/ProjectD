@@ -37,6 +37,7 @@
                 <div class="title">
                     <h5>@workspace.DeskName</h5>
                 </div>
+                @workspace.Room.RoomCode
                 <button class="btn btn-danger" @onclick="() => DeleteWorkspace(workspace.Id)">Delete</button>
             </div>
         </div>

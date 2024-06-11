@@ -8,7 +8,10 @@ public class RoomService(IDbContextFactory<AppDbContext> contextFactory)
     public async Task<IEnumerable<Room>> GetAllRoomsAsync()
     {
         await using var context = await contextFactory.CreateDbContextAsync();
-        return await context.Rooms.Include(r => r.Reservations).ToListAsync();
+        return await context.Rooms
+            .Include(r => r.Reservations)
+            .Include(r => r.Workspaces)
+            .ToListAsync();
     }
 
     public async Task<Room?> GetRoomByIdAsync(Guid? id)
