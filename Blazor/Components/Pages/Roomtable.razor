@@ -107,6 +107,13 @@
         };
 
         await ReservationService.CreateReservationAsync(reservation);
+        
+        var index = BookableList.FindIndex(b => b.Id == bookable.Id);
+        if (index != -1)
+        {
+            BookableList[index] = bookable;
+        }
+        
         NavigationManager.NavigateTo("");
     }
 

@@ -42,7 +42,8 @@ namespace Blazor.Migrations
                     Type = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     Name = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
                     MaxWorkspaces = table.Column<long>(type: "bigint", nullable: false),
-                    MaxReservations = table.Column<long>(type: "bigint", nullable: false)
+                    MaxReservations = table.Column<long>(type: "bigint", nullable: false),
+                    Count = table.Column<int>(type: "interger", nullable: false, defaultValue: 0)
                 },
                 constraints: table =>
                 {

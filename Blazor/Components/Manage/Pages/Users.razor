@@ -6,10 +6,10 @@
 <h3>Users</h3>
 
 <div>
-    <input @bind="SearchTerm" placeholder="Search users..." />
+    <input @bind="SearchTerm" placeholder="Search users..." @oninput="OnSearchTermChanged" />
 </div>
 
-<table>
+<table class="table table-striped">
     <thead>
     <tr>
         <th>E-mail</th>
@@ -17,9 +17,18 @@
     </tr>
     </thead>
     <tbody>
-    @foreach (var user in FilteredUsers)
+    @if (FilteredUsers.Any())
     {
-        <UserRow CurrentUser="user" OnUserDeleted="HandleUserDeleted" />
+        @foreach (var user in FilteredUsers)
+        {
+            <UserRow CurrentUser="user" OnUserDeleted="HandleUserDeleted" />
+        }
+    }
+    else
+    {
+        <tr>
+            <td colspan="2">No users found</td>
+        </tr>
     }
     </tbody>
 </table>
@@ -35,16 +44,30 @@
 
     private async Task LoadUsers()
     {
-        UserList = await UserManager.Users.ToListAsync();
+        try
+        {
+            UserList = await UserManager.Users.ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            // Handle exceptions (e.g., logging)
+            Console.Error.WriteLine($"Error loading users: {ex.Message}");
+        }
     }
 
     private IEnumerable<User> FilteredUsers => UserList
-        .Where(u => u.Email.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase));
+        .Where(u => string.IsNullOrWhiteSpace(SearchTerm) || u.Email.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase));
 
     private async Task HandleUserDeleted(User user)
     {
-        // Refresh the user list
         await LoadUsers();
+        SearchTerm = string.Empty;
+        StateHasChanged();
+    }
+
+    private void OnSearchTermChanged(ChangeEventArgs e)
+    {
+        SearchTerm = e.Value?.ToString() ?? string.Empty;
         StateHasChanged();
     }
 }

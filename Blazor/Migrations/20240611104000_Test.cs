@@ -6,17 +6,24 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Blazor.Migrations
 {
     /// <inheritdoc />
-    public partial class AddRoomIdToWorkspace : Migration
+    public partial class Test : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropColumn(
+                name: "Count",
+                table: "Rooms");
+
+            migrationBuilder.DropColumn(
+                name: "ReservationCount",
+                table: "AspNetUsers");
+
             migrationBuilder.AddColumn<Guid>(
                 name: "RoomId",
                 table: "Workspaces",
                 type: "uuid",
-                nullable: false,
-                defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
+                nullable: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Workspaces_RoomId",
@@ -28,8 +35,7 @@ namespace Blazor.Migrations
                 table: "Workspaces",
                 column: "RoomId",
                 principalTable: "Rooms",
-                principalColumn: "Id",
-                onDelete: ReferentialAction.Cascade);
+                principalColumn: "Id");
         }
 
         /// <inheritdoc />
@@ -46,6 +52,20 @@ namespace Blazor.Migrations
             migrationBuilder.DropColumn(
                 name: "RoomId",
                 table: "Workspaces");
+
+            migrationBuilder.AddColumn<int>(
+                name: "Count",
+                table: "Rooms",
+                type: "integer",
+                nullable: false,
+                defaultValue: 0);
+
+            migrationBuilder.AddColumn<int>(
+                name: "ReservationCount",
+                table: "AspNetUsers",
+                type: "integer",
+                nullable: false,
+                defaultValue: 0);
         }
     }
 }

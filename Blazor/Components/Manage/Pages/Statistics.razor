@@ -5,8 +5,11 @@
 @using ChartJs.Blazor.Common
 @using ChartJs.Blazor.Common.Axes
 @using ChartJs.Blazor.Common.Axes.Ticks
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
 @inject ReservationService ReservationService
 @inject RoomService RoomService
+@inject UserManager<User> UserManager
 
 <PageTitle>Statistics</PageTitle>
 
@@ -15,28 +18,268 @@
     <Chart Config="_config"></Chart>
     
     <h3>Active Floors</h3>
-    @foreach (var floor in activeFloors)
+    @if (activeFloors.Any())
     {
-        <div>
-            <p>Floor: @floor.FloorNumber</p>
-            <ul>
-                @foreach (var roomNumber in floor.RoomNumbers)
-                {
-                    <li>Room: @roomNumber</li>
-                }
-            </ul>
-        </div>
+        @foreach (var floor in activeFloors)
+        {
+            <div>
+                <p>Floor: @floor.FloorNumber</p>
+                <ul>
+                    @foreach (var roomNumber in floor.RoomNumbers.Order())
+                    {
+                        <li>Room: @roomNumber</li>
+                    }
+                </ul>
+            </div>
+        }
     }
+    else
+    {
+        <p>No active floors right now</p>
+    }
+    <h3>All Time Reservation Count</h3>
+    
+    <div>
+        <label>Select Table:</label>
+        <select @bind="SelectedTable">
+            <option value="Rooms">Rooms</option>
+            <option value="Wings">Wings</option>
+            <option value="Floors">Floors</option>
+            <option value="Users">Users</option>
+        </select>
+    </div>
+    
+    <div>
+        @if (SelectedTable == "Rooms")
+        {
+            <div>
+                <button @onclick="ToggleFilterMenu">Toggle Filter Menu</button>
+            </div>
+            @if (ShowFilterMenu)
+            {
+                <div>
+                    <label>Filter by Floor Number:</label>
+                    <input type="number" @bind="FilterFloorNumber" />
+                    <label>Filter by Wing:</label>
+                    <input type="text" @bind="FilterWing" maxlength="1" />
+                    <label>Filter by Room Number:</label>
+                    <input type="number" @bind="FilterRoomNumber" />
+                    <button @onclick="ApplyFilters">Filter</button>
+                    <button @onclick="ClearFilters">Clear Filters</button>
+                </div>
+            }
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Room Code</th>
+                        <th @onclick="ToggleCountOrder">
+                            Reservation Count 
+                            @if (CountDescending)
+                            {
+                                <span>&darr;</span> 
+                            }
+                            else
+                            {
+                                <span>&uarr;</span>
+                            }
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (CountDescending)
+                {
+                    @foreach (var room in FilteredRooms.OrderByDescending(r => r.Reservations.Count).ThenBy(r => r.FloorNumber).ThenBy(r => r.RoomNumber))
+                    {
+                        <tr>
+                            <td>@room.RoomCode</td>
+                            <td>@room.Reservations.Count</td>
+                        </tr>
+                    }
+                }
+                @if(!CountDescending)
+                {
+                    @foreach (var room in FilteredRooms.OrderBy(r => r.Reservations.Count).ThenBy(r => r.FloorNumber).ThenBy(r => r.RoomNumber))
+                    {
+                        <tr>
+                            <td>@room.RoomCode</td>
+                            <td>@room.Reservations.Count</td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        }
+        
+        @if (SelectedTable == "Wings")
+            {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Wing</th>
+                        <th @onclick="ToggleCountOrder">
+                            Reservation Count 
+                            @if (CountDescending)
+                            {
+                                <span>&darr;</span> 
+                            }
+                            else
+                            {
+                                <span>&uarr;</span> 
+                            }
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (CountDescending)
+                {
+                    @foreach (var wingCount in WingCounts.OrderByDescending(r => r.Count))
+                    {
+                        <tr>
+                            <td>@wingCount.Wing</td>
+                            <td>@wingCount.Count</td>
+                        </tr>
+                    }
+                }
+                @if (!CountDescending)
+                    {
+                        @foreach (var wingCount in WingCounts.OrderBy(r => r.Count))
+                        {
+                            <tr>
+                                <td>@wingCount.Wing</td>
+                                <td>@wingCount.Count</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+            }
+                
+        @if (SelectedTable == "Floors")
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Floor Number</th>
+                        <th @onclick="ToggleCountOrder">
+                            Reservation Count 
+                            @if (CountDescending)
+                            {
+                                <span>&darr;</span> 
+                            }
+                            else
+                            {
+                                <span>&uarr;</span> 
+                            }
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (CountDescending)
+                {
+                    @foreach (var floorCount in FloorCounts.OrderByDescending(r => r.Count))
+                    {
+                        <tr>
+                            <td>@floorCount.FloorNumber</td>
+                            <td>@floorCount.Count</td>
+                        </tr>
+                    }
+                }
+                @if (!CountDescending)
+                    {
+                        @foreach (var floorCount in FloorCounts.OrderBy(r => r.Count))
+                        {
+                            <tr>
+                                <td>@floorCount.FloorNumber</td>
+                                <td>@floorCount.Count</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        }
+        
+         @if (SelectedTable == "Users")
+        {
+            <div>
+                <label>Search Username:</label>
+                <input type="text" @bind="UserSearchTerm" @oninput="ApplyUserFilter" />
+                <button @onclick="ClearUserFilters">Clear Filters</button>
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th @onclick="ToggleCountOrder">
+                            Reservation Count 
+                            @if (CountDescending)
+                            {
+                                <span>&darr;</span>
+                            }
+                            else
+                            {
+                                <span>&uarr;</span>
+                            }
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                @if (CountDescending)
+                {
+                    @foreach (var user in FilteredUsers.OrderByDescending(u => u.Reservations.Count()).ThenBy(u => u.UserName))
+                    {
+                        <tr>
+                            <td>@user.Email</td>
+                            <td>@user.Reservations.Count()</td>
+                        </tr>
+                    }
+                }
+                @if (!CountDescending)
+                {
+                    @foreach (var user in FilteredUsers.OrderBy(u => u.Reservations.Count()).ThenBy(u => u.UserName))
+                    {
+                        <tr>
+                            <td>@user.Email</td>
+                            <td>@user.Reservations.Count()</td>
+                        </tr>
+                    }
+                }
+                </tbody>
+            </table>
+        }
+    </div>
 </div>
 
 @code {
     private List<Reservation> Reservations { get; set; } = new();
     private List<(int FloorNumber, List<int?> RoomNumbers)> activeFloors { get; set; } = new();
+    private List<Data.Room> Rooms { get; set; } = new();
+    private List<Data.Room> FilteredRooms { get; set; } = new();
+    private List<(string Wing, int Count)> WingCounts { get; set; } = new();
+    private List<(int FloorNumber, int Count)> FloorCounts { get; set; } = new();
+    private List<User> Users { get; set; } = new();
+    private List<User> FilteredUsers { get; set; } = new();
+    
     private BarConfig _config;
 
-    protected override void OnInitialized()
+    private string _selectedTable = "Rooms";
+    private string SelectedTable
     {
+        get => _selectedTable;
+        set
+        {
+            if (_selectedTable != value)
+            {
+                _selectedTable = value;
+                CountDescending = true;
+            }
+        }
     }
+    private bool ShowFilterMenu { get; set; }
+    private int? FilterFloorNumber { get; set; }
+    private string FilterWing { get; set; }
+    private int? FilterRoomNumber { get; set; }
+    private bool CountDescending { get; set; } = true;
+    private string UserSearchTerm { get; set; } = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -74,7 +317,8 @@
             .Where(r => r.StartDate.Date >= today && r.StartDate.Date <= today.AddDays(1))
             .OrderBy(r => r.StartDate)
             .ToList();
-
+        
+        
         var activeReservations = (await ReservationService.GetAllReservationsAsync())
             .Where(r => r.StartDate.AddHours(2) <= now && r.EndDate.AddHours(2) >= now)
             .OrderBy(r => r.StartDate)
@@ -100,7 +344,7 @@
         }
 
         activeFloors = tempActiveFloors.Select(f => (f.FloorNumber, f.RoomNumbers.Distinct().ToList())).ToList();
-
+        
         int[] reservationCounts = new int[2];
         for (int i = 0; i < 2; i++)
         {
@@ -130,5 +374,70 @@
         };
 
         _config.Data.Datasets.Add(dataset);
+
+        Rooms = (await RoomService.GetAllRoomsAsync()).ToList();
+        FilteredRooms = new List<Data.Room>(Rooms);
+        
+        WingCounts = Rooms
+            .GroupBy(r => r.Wing)
+            .Select(group => (group.Key, group.Sum(r => r.Reservations.Count)))
+            .ToList();
+
+        
+        FloorCounts = Rooms
+            .GroupBy(r => r.FloorNumber)
+            .Select(group => (group.Key, group.Sum(r => r.Reservations.Count)))
+            .ToList();
+        
+        Users = (await UserManager.Users.Include(u => u.Reservations).ToListAsync()).OrderByDescending(u => u.Reservations.Count()).ToList();
+        FilteredUsers = new List<User>(Users);
+    }
+
+    private void ToggleFilterMenu()
+    {
+        if (ShowFilterMenu) ShowFilterMenu = false;
+        else if (!ShowFilterMenu) ShowFilterMenu = true;
+    }
+
+    private void ApplyFilters()
+    {
+        FilteredRooms = Rooms
+            .Where(r => (!FilterFloorNumber.HasValue || r.FloorNumber == FilterFloorNumber.Value)
+                        && (string.IsNullOrEmpty(FilterWing) || r.Wing.Equals(FilterWing, StringComparison.OrdinalIgnoreCase))
+                        && (!FilterRoomNumber.HasValue || r.RoomNumber == FilterRoomNumber.Value))
+            .OrderBy(r => r.FloorNumber)
+            .ThenBy(r => r.RoomNumber)
+            .ToList();
+        
+    }
+
+    private void ClearFilters()
+    {
+        FilterFloorNumber = null;
+        FilterWing = "";
+        FilterRoomNumber = null;
+        ApplyFilters();
+    }
+
+    private void ToggleCountOrder()
+    {
+        if (CountDescending) CountDescending = false;
+        else if (!CountDescending) CountDescending = true;
+    }
+    
+    private void ApplyUserFilter(ChangeEventArgs e)
+    {
+        UserSearchTerm = e.Value.ToString().ToLower();
+        FilteredUsers = Users
+            .Where(u => u.UserName.ToLower().StartsWith(UserSearchTerm))
+            .OrderByDescending(u => u.Reservations.Count())
+            .ToList();
+    }
+
+    private void ClearUserFilters()
+    {
+        UserSearchTerm = "";
+        var changeEventArgs = new ChangeEventArgs { Value = "" };
+        ApplyUserFilter(changeEventArgs);    
     }
 }

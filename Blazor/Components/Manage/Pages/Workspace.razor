@@ -37,6 +37,7 @@
                 <div class="title">
                     <h5>@workspace.DeskName</h5>
                 </div>
+                <button class="btn btn-danger" @onclick="() => DeleteWorkspace(workspace.Id)">Delete</button>
             </div>
         </div>
     }
@@ -44,7 +45,7 @@
 
 @code {
     private List<Data.Workspace> Workspaces { get; set; } = [];
-    private List<Data.Room> Rooms { get; set; } = [];
+    private List<Room> Rooms { get; set; } = [];
     private Data.Workspace? CurrentWorkspace { get; set; }
     
     protected override async Task OnInitializedAsync()
@@ -66,5 +67,10 @@
         await OnInitializedAsync();
         CurrentWorkspace = null;
     }
-    
+
+    private async Task DeleteWorkspace(Guid id)
+    {
+        await WorkspaceService.DeleteWorkspaceAsync(id);
+        await OnInitializedAsync();
+    }
 }

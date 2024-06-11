@@ -5,25 +5,25 @@
 namespace Blazor.Migrations
 {
     /// <inheritdoc />
-    public partial class AddDeskNameToWorkspace : Migration
+    public partial class AddCountColumnToRooms : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "DeskName",
-                table: "Workspaces",
-                type: "text",
+            migrationBuilder.AddColumn<int>(
+                name: "Count",
+                table: "Rooms",
+                type: "integer",
                 nullable: false,
-                defaultValue: "");
+                defaultValue: 0);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "DeskName",
-                table: "Workspaces");
+                name: "Count",
+                table: "Rooms");
         }
     }
 }
