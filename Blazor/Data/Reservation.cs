@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Blazor.Data;
 
@@ -33,8 +34,23 @@ public class Reservation
 
     [Required] public DateTime StartDate { get; set; }
     [Required] public DateTime EndDate { get; set; }
-    
-    public IBookable? Bookable => (IBookable?)Room ?? Workspace;
+
+    [NotMapped] public IBookable? Bookable
+    {
+        get => (IBookable?)Room ?? Workspace;
+        set {
+            switch (value)
+            {
+                case Room room:
+                    RoomId = value.Id;
+                    break;
+                case Workspace workspace:
+                    WorkspaceId = value.Id;
+                    break;
+            }
+        }
+    }
+
     public bool SetBookable(Guid bookableId, string type)
     {
         switch (type.ToLower())
@@ -56,6 +72,6 @@ public class Reservation
     
     public string FormatTimeRange()
     {
-        return $"{StartDate:dddd, MMMM d} {StartDate:HH:mm} - {(StartDate.Date == EndDate.Date ? string.Empty : $"{EndDate:dddd, MMMM d}")} {EndDate:HH:mm}";
+        return $"{(DateTime.Today.Year != StartDate.Year ? StartDate.Year : string.Empty )} {StartDate:dddd, MMMM d} {StartDate:HH:mm} - {(DateTime.Today.Year != EndDate.Year ? EndDate.Year : string.Empty )} {(StartDate.Date == EndDate.Date ? string.Empty : $"{EndDate:dddd, MMMM d}")} {EndDate:HH:mm}";
     }
 }

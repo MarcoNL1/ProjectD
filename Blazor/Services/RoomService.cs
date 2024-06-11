@@ -41,7 +41,6 @@ public class RoomService(IDbContextFactory<AppDbContext> contextFactory)
         existingRoom.Name = room.Name;
         existingRoom.MaxWorkspaces = room.MaxWorkspaces;
         existingRoom.MaxReservations = room.MaxReservations;
-        existingRoom.Count = room.Count;
         await context.SaveChangesAsync();
         return existingRoom;
     }

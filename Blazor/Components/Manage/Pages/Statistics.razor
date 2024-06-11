@@ -88,21 +88,21 @@
                 <tbody>
                 @if (CountDescending)
                 {
-                    @foreach (var room in FilteredRooms.OrderByDescending(r => r.Count).ThenBy(r => r.FloorNumber).ThenBy(r => r.RoomNumber))
+                    @foreach (var room in FilteredRooms.OrderByDescending(r => r.Reservations.Count).ThenBy(r => r.FloorNumber).ThenBy(r => r.RoomNumber))
                     {
                         <tr>
                             <td>@room.RoomCode</td>
-                            <td>@room.Count</td>
+                            <td>@room.Reservations.Count</td>
                         </tr>
                     }
                 }
                 @if(!CountDescending)
                 {
-                    @foreach (var room in FilteredRooms.OrderBy(r => r.Count).ThenBy(r => r.FloorNumber).ThenBy(r => r.RoomNumber))
+                    @foreach (var room in FilteredRooms.OrderBy(r => r.Reservations.Count).ThenBy(r => r.FloorNumber).ThenBy(r => r.RoomNumber))
                     {
                         <tr>
                             <td>@room.RoomCode</td>
-                            <td>@room.Count</td>
+                            <td>@room.Reservations.Count</td>
                         </tr>
                     }
                 }
@@ -225,21 +225,21 @@
                 <tbody>
                 @if (CountDescending)
                 {
-                    @foreach (var user in FilteredUsers.OrderByDescending(u => u.ReservationCount).ThenBy(u => u.UserName))
+                    @foreach (var user in FilteredUsers.OrderByDescending(u => u.Reservations.Count()).ThenBy(u => u.UserName))
                     {
                         <tr>
                             <td>@user.Email</td>
-                            <td>@user.ReservationCount</td>
+                            <td>@user.Reservations.Count()</td>
                         </tr>
                     }
                 }
                 @if (!CountDescending)
                 {
-                    @foreach (var user in FilteredUsers.OrderBy(u => u.ReservationCount).ThenBy(u => u.UserName))
+                    @foreach (var user in FilteredUsers.OrderBy(u => u.Reservations.Count()).ThenBy(u => u.UserName))
                     {
                         <tr>
                             <td>@user.Email</td>
-                            <td>@user.ReservationCount</td>
+                            <td>@user.Reservations.Count()</td>
                         </tr>
                     }
                 }
@@ -380,16 +380,16 @@
         
         WingCounts = Rooms
             .GroupBy(r => r.Wing)
-            .Select(group => (group.Key, group.Sum(r => r.Count)))
+            .Select(group => (group.Key, group.Sum(r => r.Reservations.Count)))
             .ToList();
 
         
         FloorCounts = Rooms
             .GroupBy(r => r.FloorNumber)
-            .Select(group => (group.Key, group.Sum(r => r.Count)))
+            .Select(group => (group.Key, group.Sum(r => r.Reservations.Count)))
             .ToList();
         
-        Users = (await UserManager.Users.ToListAsync()).OrderByDescending(u => u.ReservationCount).ToList();
+        Users = (await UserManager.Users.Include(u => u.Reservations).ToListAsync()).OrderByDescending(u => u.Reservations.Count()).ToList();
         FilteredUsers = new List<User>(Users);
     }
 
@@ -430,7 +430,7 @@
         UserSearchTerm = e.Value.ToString().ToLower();
         FilteredUsers = Users
             .Where(u => u.UserName.ToLower().StartsWith(UserSearchTerm))
-            .OrderByDescending(u => u.ReservationCount)
+            .OrderByDescending(u => u.Reservations.Count())
             .ToList();
     }
 
