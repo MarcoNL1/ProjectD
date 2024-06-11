@@ -8,7 +8,7 @@
 @inject UserManager<User> UserManager
 
 <!-- Loop through each distinct floor and display the rooms in a table -->
-@foreach (var floor in Rooms.Select(r => r.FloorNumber).Distinct().Order())
+@foreach (var floor in BookableList.Select(r => r.FloorNumber).Distinct().Order())
 {
     <h3>Floor @floor</h3>
     <table class="table table-striped">
@@ -25,17 +25,29 @@
         </tr>
         </thead>
         <tbody>
-        @foreach (var room in Rooms.Where(r => r.FloorNumber == floor).OrderBy(r => r.Wing).ThenBy(r => r.RoomNumber))
+        @foreach (var bookable in BookableList.Where(r => r.FloorNumber == floor).OrderBy(r => r.Wing).ThenBy(r => r.RoomNumber))
         {
             <tr>
-                <td>@(IsRoomAvailable(room) ? "Available" : "Occupied")</td>
-                <td>@room.RoomCode</td>
-                <td>@room.Type</td>
-                <td>@room.Name</td>
+                <td>@(IsRoomAvailable(bookable) ? "Available" : "Occupied")</td>
+
+                @switch (bookable)
+                {
+                    case Room room:
+                        <td>@room.RoomCode</td>
+                        <td>@room.Type</td>
+                        <td>@room.Name</td>
+                        break;
+                    case Workspace workspace:
+                        <td></td>
+                        <td>Workspace</td>
+                        <td>@workspace.DeskName</td>
+                        break;
+                }
+
                 @if (!Viewing)
                 {
                     <td>
-                        <button @onclick="() => HandleReservation(room)">Reserve Workspace</button>
+                        <button @onclick="() => HandleReservation(bookable)">Reserve Workspace</button>
                     </td>
                 }
             </tr>
@@ -45,23 +57,23 @@
 }
 
 @code {
-    [SupplyParameterFromForm] public Room? Room { get; set; }
-    [SupplyParameterFromQuery] public bool Viewing { get; set; }
     [SupplyParameterFromQuery] public string localStartDateTimeString { get; set; } = string.Empty;
     [SupplyParameterFromQuery] public string localEndDateTimeString { get; set; } = string.Empty;
 
     private AuthenticationState _authenticationState;
-    private List<Room> Rooms { get; set; } = new();
+    private List<IBookable> BookableList { get; set; } = new();
     private List<Reservation> Reservations { get; set; } = new();
+    private bool Viewing { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        Rooms = (await RoomService.GetAllRoomsAsync()).ToList();
+        BookableList = (await RoomService.GetAllRoomsAsync()).Cast<IBookable>().ToList();
         Reservations = (await ReservationService.GetAllReservationsAsync()).ToList();
         _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        Viewing = string.IsNullOrEmpty(localStartDateTimeString) && string.IsNullOrEmpty(localEndDateTimeString);
     }
 
-    private bool IsRoomAvailable(Room room)
+    private bool IsRoomAvailable(IBookable bookable)
     {
         if (!DateTime.TryParse(localStartDateTimeString, out var localStartDateTime) ||
             !DateTime.TryParse(localEndDateTimeString, out var localEndDateTime))
@@ -69,12 +81,12 @@
             return false;
         }
 
-        return Reservations.Where(r => r.RoomId == room.Id).All(
-            reservation => localStartDateTime >= reservation.EndDate 
+        return Reservations.Where(r => r.RoomId == bookable.Id || r.WorkspaceId == bookable.Id).All(
+            reservation => localStartDateTime >= reservation.EndDate
                            || localEndDateTime <= reservation.StartDate);
     }
 
-    private async Task HandleReservation(Room room)
+    private async Task HandleReservation(IBookable bookable)
     {
         if (!DateTime.TryParse(localStartDateTimeString, out var localStartDateTime) ||
             !DateTime.TryParse(localEndDateTimeString, out var localEndDateTime))
@@ -89,7 +101,7 @@
         var reservation = new Reservation
         {
             UserId = Guid.Parse(user.Id).ToString(),
-            RoomId = room.Id,
+            Bookable = bookable,
             StartDate = TimeZoneInfo.ConvertTimeToUtc(localStartDateTime),
             EndDate = TimeZoneInfo.ConvertTimeToUtc(localEndDateTime)
         };
@@ -97,4 +109,5 @@
         await ReservationService.CreateReservationAsync(reservation);
         NavigationManager.NavigateTo("");
     }
+
 }

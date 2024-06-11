@@ -12,7 +12,8 @@ public class Room : IBookable
     [MaxLength(20)] public string Name { get; set; } = "";
     public uint MaxWorkspaces { get; set; }
     public uint MaxReservations { get; set; }
-    public List<Reservation> Reservations { get; set; }
+    public List<Reservation> Reservations { get; set; } = [];
+    public List<Workspace> Workspaces { get; set; } = [];
     
     public bool HasWorkspaces => MaxWorkspaces > 0;
     public bool IsBookable => MaxReservations > 0;
