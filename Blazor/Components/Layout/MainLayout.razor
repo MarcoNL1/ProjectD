@@ -27,7 +27,7 @@
         <div class="top-row px-4">
             <AuthorizeView>
                 <Authorized>
-                    <span>@_authenticationState.User.Identity.Name</span>
+                    <a href="/Account/Manage">@_authenticationState.User.Identity.Name</a>
                     <a href="/Account/Logout">Logout</a>
                 </Authorized>
             </AuthorizeView>
