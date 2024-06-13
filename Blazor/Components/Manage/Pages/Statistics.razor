@@ -15,7 +15,14 @@
 
 <div>
     <h1>Statistics Page</h1>
+    <h3>Total Reservations for Today and Tomorrow</h3>
     <Chart Config="_config"></Chart>
+    
+    <h3>Floor-wise Reservations for Today and Tomorrow</h3>
+    <Chart Config="_floorReservationConfig"></Chart>
+    
+    <h3>Wing-wise Reservations for Today and Tomorrow</h3>
+        <Chart Config="_wingReservationConfig"></Chart>
     
     <h3>Active Floors</h3>
     @if (activeFloors.Any())
@@ -88,21 +95,21 @@
                 <tbody>
                 @if (CountDescending)
                 {
-                    @foreach (var room in FilteredRooms.OrderByDescending(r => r.Count).ThenBy(r => r.FloorNumber).ThenBy(r => r.RoomNumber))
+                    @foreach (var room in FilteredRooms.OrderByDescending(r => r.Reservations.Count).ThenBy(r => r.FloorNumber).ThenBy(r => r.RoomNumber))
                     {
                         <tr>
                             <td>@room.RoomCode</td>
-                            <td>@room.Count</td>
+                            <td>@room.Reservations.Count</td>
                         </tr>
                     }
                 }
                 @if(!CountDescending)
                 {
-                    @foreach (var room in FilteredRooms.OrderBy(r => r.Count).ThenBy(r => r.FloorNumber).ThenBy(r => r.RoomNumber))
+                    @foreach (var room in FilteredRooms.OrderBy(r => r.Reservations.Count).ThenBy(r => r.FloorNumber).ThenBy(r => r.RoomNumber))
                     {
                         <tr>
                             <td>@room.RoomCode</td>
-                            <td>@room.Count</td>
+                            <td>@room.Reservations.Count</td>
                         </tr>
                     }
                 }
@@ -225,21 +232,21 @@
                 <tbody>
                 @if (CountDescending)
                 {
-                    @foreach (var user in FilteredUsers.OrderByDescending(u => u.ReservationCount).ThenBy(u => u.UserName))
+                    @foreach (var user in FilteredUsers.OrderByDescending(u => u.Reservations.Count()).ThenBy(u => u.UserName))
                     {
                         <tr>
                             <td>@user.Email</td>
-                            <td>@user.ReservationCount</td>
+                            <td>@user.Reservations.Count()</td>
                         </tr>
                     }
                 }
                 @if (!CountDescending)
                 {
-                    @foreach (var user in FilteredUsers.OrderBy(u => u.ReservationCount).ThenBy(u => u.UserName))
+                    @foreach (var user in FilteredUsers.OrderBy(u => u.Reservations.Count()).ThenBy(u => u.UserName))
                     {
                         <tr>
                             <td>@user.Email</td>
-                            <td>@user.ReservationCount</td>
+                            <td>@user.Reservations.Count()</td>
                         </tr>
                     }
                 }
@@ -260,6 +267,8 @@
     private List<User> FilteredUsers { get; set; } = new();
     
     private BarConfig _config;
+    private BarConfig _floorReservationConfig;
+    private BarConfig _wingReservationConfig;
 
     private string _selectedTable = "Rooms";
     private string SelectedTable
@@ -309,8 +318,63 @@
                 }
             }
         };
+        
+        _floorReservationConfig = new BarConfig
+        {
+            Options = new BarOptions
+            {
+                Scales = new BarScales
+                {
+                    YAxes = new List<CartesianAxis>
+                    {
+                        new BarLinearCartesianAxis
+                        {
+                            Ticks = new LinearCartesianTicks
+                            {
+                                BeginAtZero = true,
+                                StepSize = 1,
+                            }
+                        }
+                    }
+                },
+                Responsive = true,
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = "Reservations for today and tomorrow!"
+                }
+            }
+        };
+        
+        _wingReservationConfig = new BarConfig
+        {
+            Options = new BarOptions
+            {
+                Scales = new BarScales
+                {
+                    YAxes = new List<CartesianAxis>
+                    {
+                        new BarLinearCartesianAxis
+                        {
+                            Ticks = new LinearCartesianTicks
+                            {
+                                BeginAtZero = true,
+                                StepSize = 1,
+                            }
+                        }
+                    }
+                },
+                Responsive = true,
+                Title = new OptionsTitle
+                {
+                    Display = true,
+                    Text = "Reservations for today and tomorrow by Wing"
+                }
+            }
+        };
 
         var today = DateTime.Now.Date;
+        var tomorrow = today.AddDays(1);
         var now = DateTime.Now;
 
         Reservations = (await ReservationService.GetAllReservationsAsync())
@@ -378,18 +442,113 @@
         Rooms = (await RoomService.GetAllRoomsAsync()).ToList();
         FilteredRooms = new List<Data.Room>(Rooms);
         
+        var floors = Rooms.Select(r => r.FloorNumber).Distinct().OrderBy(f => f).ToList();
+        var wings = Rooms.Select(r => r.Wing).Distinct().OrderBy(f => f).ToList();
+
+        var reservationCountsToday = new int[floors.Count];
+        var reservationCountsTomorrow = new int[floors.Count];
+        
+        for (int i = 0; i < floors.Count; i++)
+        {
+            var floorNumber = floors[i];
+        
+            // Filter rooms for the current floor number
+            var roomsOnFloor = Rooms.Where(r => r.FloorNumber == floorNumber).ToList();
+        
+            // Calculate reservation counts for today and tomorrow
+            reservationCountsToday[i] = Reservations
+                .Count(r => r.StartDate.Date == today && roomsOnFloor.Any(room => room.Id == r.RoomId));
+        
+            reservationCountsTomorrow[i] = Reservations
+                .Count(r => r.StartDate.Date == tomorrow && roomsOnFloor.Any(room => room.Id == r.RoomId));
+        }
+
+        
+        var floorLabels = floors.Select(f => $"Floor {f}").ToArray();
+
+        foreach (var label in floorLabels)
+        {
+            _floorReservationConfig.Data.Labels.Add(label);
+        }
+        
+        var datasetToday = new BarDataset<int>(reservationCountsToday)
+        {
+            Label = "Today",
+            BackgroundColor = new[]
+            {
+                ColorUtil.ColorHexString(255, 99, 132)
+            }
+        };
+        
+        var datasetTomorrow = new BarDataset<int>(reservationCountsTomorrow)
+        {
+            Label = "Tomorrow",
+            BackgroundColor = new[]
+            {
+                ColorUtil.ColorHexString(255, 99, 132)
+            }
+        };
+        
+        _floorReservationConfig.Data.Datasets.Add(datasetToday);
+        _floorReservationConfig.Data.Datasets.Add(datasetTomorrow);
+        
+        var wingLabels = wings.Select(f => $"Wing {f}").ToArray();
+        var reservationCountsTodayWing = new int[3];
+        var reservationCountsTomorrowWing = new int[3];
+        
+        for (int i = 0; i < wings.Count; i++)
+        {
+            var wing = wings[i];
+        
+            // Filter rooms for the current floor number
+            var roomsOnWing = Rooms.Where(r => r.Wing == wing).ToList();
+        
+            // Calculate reservation counts for today and tomorrow
+            reservationCountsTodayWing[i] = Reservations
+                .Count(r => r.StartDate.Date == today && roomsOnWing.Any(room => room.Id == r.RoomId));
+        
+            reservationCountsTomorrowWing[i] = Reservations
+                .Count(r => r.StartDate.Date == tomorrow && roomsOnWing.Any(room => room.Id == r.RoomId));
+        }
+
+        foreach (var label in wingLabels)
+        {
+            _wingReservationConfig.Data.Labels.Add(label);
+        }
+
+        var datasetTodayWing = new BarDataset<int>(reservationCountsTodayWing)
+        {
+            Label = "Today",
+            BackgroundColor = new[]
+            {
+                ColorUtil.ColorHexString(255, 99, 132)
+            }
+        };
+
+        var datasetTomorrowWing = new BarDataset<int>(reservationCountsTomorrowWing)
+        {
+            Label = "Tomorrow",
+            BackgroundColor = new[]
+            {
+                ColorUtil.ColorHexString(255, 99, 132)
+            }
+        };
+
+        _wingReservationConfig.Data.Datasets.Add(datasetTodayWing);
+        _wingReservationConfig.Data.Datasets.Add(datasetTomorrowWing);
+        
         WingCounts = Rooms
             .GroupBy(r => r.Wing)
-            .Select(group => (group.Key, group.Sum(r => r.Count)))
+            .Select(group => (group.Key, group.Sum(r => r.Reservations.Count)))
             .ToList();
 
         
         FloorCounts = Rooms
             .GroupBy(r => r.FloorNumber)
-            .Select(group => (group.Key, group.Sum(r => r.Count)))
+            .Select(group => (group.Key, group.Sum(r => r.Reservations.Count)))
             .ToList();
         
-        Users = (await UserManager.Users.ToListAsync()).OrderByDescending(u => u.ReservationCount).ToList();
+        Users = (await UserManager.Users.Include(u => u.Reservations).ToListAsync()).OrderByDescending(u => u.Reservations.Count()).ToList();
         FilteredUsers = new List<User>(Users);
     }
 
@@ -430,7 +589,7 @@
         UserSearchTerm = e.Value.ToString().ToLower();
         FilteredUsers = Users
             .Where(u => u.UserName.ToLower().StartsWith(UserSearchTerm))
-            .OrderByDescending(u => u.ReservationCount)
+            .OrderByDescending(u => u.Reservations.Count())
             .ToList();
     }
 
