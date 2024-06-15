@@ -1,0 +1,112 @@
+﻿@page "/roomtable"
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject RoomService RoomService
+@inject ReservationService ReservationService
+@inject NavigationManager NavigationManager
+@inject UserManager<User> UserManager
+
+<!-- Loop through each distinct floor and display the rooms in a table -->
+@foreach (var floor in Rooms.Select(r => r.FloorNumber).Distinct().Order())
+{
+    <h3>Floor @floor</h3>
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Availability</th>
+            <th>Room Code</th>
+            <th>Room Type</th>
+            <th>Room Name</th>
+            @if (!Viewing)
+            {
+                <th>Actions</th>
+            }
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var room in Rooms.Where(r => r.FloorNumber == floor).OrderBy(r => r.Wing).ThenBy(r => r.RoomNumber))
+        {
+            <tr>
+                <td>@(IsRoomAvailable(room) ? "Available" : "Occupied")</td>
+                <td>@room.RoomCode</td>
+                <td>@room.Type</td>
+                <td>@room.Name</td>
+                @if (!Viewing)
+                {
+                    <td>
+                        <button @onclick="() => HandleReservation(room)">Reserve Workspace</button>
+                    </td>
+                }
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    [SupplyParameterFromForm] public Room? Room { get; set; }
+    [SupplyParameterFromQuery] public bool Viewing { get; set; }
+    [SupplyParameterFromQuery] public string localStartDateTimeString { get; set; } = string.Empty;
+    [SupplyParameterFromQuery] public string localEndDateTimeString { get; set; } = string.Empty;
+
+    private AuthenticationState _authenticationState;
+    private List<Room> Rooms { get; set; } = new();
+    private List<Reservation> Reservations { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Rooms = (await RoomService.GetAllRoomsAsync()).ToList();
+        Reservations = (await ReservationService.GetAllReservationsAsync()).ToList();
+        _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    }
+
+    private bool IsRoomAvailable(Room room)
+    {
+        if (!DateTime.TryParse(localStartDateTimeString, out var localStartDateTime) ||
+            !DateTime.TryParse(localEndDateTimeString, out var localEndDateTime))
+        {
+            return false;
+        }
+
+        return Reservations.Where(r => r.RoomId == room.Id).All(
+            reservation => localStartDateTime >= reservation.EndDate 
+                           || localEndDateTime <= reservation.StartDate);
+    }
+
+    private async Task HandleReservation(Room room)
+    {
+        if (!DateTime.TryParse(localStartDateTimeString, out var localStartDateTime) ||
+            !DateTime.TryParse(localEndDateTimeString, out var localEndDateTime))
+        {
+            // Handle invalid date input (optional)
+            return;
+        }
+
+        var user = await UserManager.FindByNameAsync(_authenticationState.User.Identity?.Name);
+        if (user == null) return;
+
+        var reservation = new Reservation
+        {
+            UserId = Guid.Parse(user.Id).ToString(),
+            RoomId = room.Id,
+            StartDate = TimeZoneInfo.ConvertTimeToUtc(localStartDateTime),
+            EndDate = TimeZoneInfo.ConvertTimeToUtc(localEndDateTime)
+        };
+
+        await ReservationService.CreateReservationAsync(reservation);
+        
+        room.Count++;
+        await RoomService.UpdateRoomAsync(room);
+        var index = Rooms.FindIndex(r => r.Id == room.Id);
+        if (index != -1)
+        {
+            Rooms[index] = room;
+        }
+        
+        user.ReservationCount++;
+        await UserManager.UpdateAsync(user);
+        
+        NavigationManager.NavigateTo("");
+    }
+}

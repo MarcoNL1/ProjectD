@@ -61,6 +61,9 @@ namespace Blazor.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<int>("Count")
+                        .HasColumnType("integer");
+
                     b.Property<int>("FloorNumber")
                         .HasColumnType("integer");
 
@@ -135,6 +138,9 @@ namespace Blazor.Migrations
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("boolean");
 
+                    b.Property<int>("ReservationCount")
+                        .HasColumnType("integer");
+
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
 
@@ -163,16 +169,7 @@ namespace Blazor.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("DeskName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("RoomId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("RoomId");
 
                     b.ToTable("Workspaces");
                 });
@@ -332,17 +329,6 @@ namespace Blazor.Migrations
                     b.Navigation("Workspace");
                 });
 
-            modelBuilder.Entity("Blazor.Data.Workspace", b =>
-                {
-                    b.HasOne("Blazor.Data.Room", "Room")
-                        .WithMany("Workspaces")
-                        .HasForeignKey("RoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Room");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -397,8 +383,6 @@ namespace Blazor.Migrations
             modelBuilder.Entity("Blazor.Data.Room", b =>
                 {
                     b.Navigation("Reservations");
-
-                    b.Navigation("Workspaces");
                 });
 
             modelBuilder.Entity("Blazor.Data.User", b =>

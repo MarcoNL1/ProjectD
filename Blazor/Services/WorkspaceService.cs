@@ -8,9 +8,7 @@ public class WorkspaceService(IDbContextFactory<AppDbContext> contextFactory)
     public async Task<IEnumerable<Workspace>> GetAllWorkspacesAsync()
     {
         await using var context = await contextFactory.CreateDbContextAsync();
-        return await context.Workspaces
-            .Include(w => w.Room)
-            .ToListAsync();
+        return await context.Workspaces.ToListAsync();
     }
     
     public async Task<Workspace?> GetWorkspaceByIdAsync(Guid id)

@@ -1,5 +1,11 @@
 ﻿@page "/reservation"
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ReservationService ReservationService
 @inject NavigationManager NavigationManager
+@inject RoomService RoomService
+@inject UserManager<User> UserManager
 
 <PageTitle>Reservation</PageTitle>
 
@@ -9,81 +15,53 @@
 }
 
 <EditForm Model="Reservation" OnValidSubmit="HandleSubmit">
-    <div class="mb-2 row g-3 align-items-center">
-        <div class="col-auto">
-            <label class="col-form-label">Date:</label>
-        </div>
-        <div class="col-auto">
-            <select class="form-select" @onchange="UpdateDate">
-                @for (var i = 0; i < 14; i++)
-                {
-                    var currentDay = DateTime.Today.AddDays(i);
-                    <option value="@(currentDay.ToString("yyyy-MM-dd"))" selected="@(currentDay == SelectedDate)">@(currentDay.ToString("dd/MM/yyyy"))</option>
-                }
-            </select>
-        </div>
+    <div>
+        <label>Date:</label>
+        <select @onchange="UpdateDate">
+            @for (var i = 0; i < 14; i++)
+            {
+                var currentDay = DateTime.Today.AddDays(i);
+                <option value="@(currentDay.ToString("yyyy-MM-dd"))" selected="@(currentDay == SelectedDate)">@(currentDay.ToString("dd/MM/yyyy"))</option>
+            }
+        </select>
     </div>
-    <div class="mb-2 row g-3 align-items-center">
-        <div class="col-auto">
-            <label class="col-form-label">Start Time:</label>
-        </div>
-        <div class="col-auto">
-            H
-        </div>
-        <div class="col-auto">
-            <select @onchange="UpdateStartHour" class="form-select">
-                @foreach (var hour in StartHours)
-                {
-                    <option value="@hour" selected="@(hour == StartHour)">@hour</option>
-                }
-            </select>
-        </div>
-        <div class="col-auto">
-            Min
-        </div>
-        <div class="col-auto">
-            <select @onchange="UpdateStartMinute" class="form-select">
-                @foreach (var minute in StartMinutes)
-                {
-                    <option value="@minute" selected="@(minute == StartMinute)">@minute</option>
-                }
-            </select>
-        </div>
+    <div>
+        <label>Start Time:</label>
+        H
+        <select @onchange="UpdateStartHour">
+            @foreach (var hour in StartHours)
+            {
+                <option value="@hour" selected="@(hour == StartHour)">@hour</option>
+            }
+        </select>
+        Min
+        <select @onchange="UpdateStartMinute">
+            @foreach (var minute in StartMinutes)
+            {
+                <option value="@minute" selected="@(minute == StartMinute)">@minute</option>
+            }
+        </select>
     </div>
-    <div class="mb-2 row g-3 align-items-center">
-        <div class="col-auto">
-            <label class="col-form-label">End Time:</label>
-        </div>
-        <div class="col-auto">
-            H
-        </div>
-        <div class="col-auto">
-            <select @onchange="UpdateEndHour" class="form-select col-auto">
-                @foreach (var hour in EndHours)
-                {
-                    <option value="@hour" selected="@(hour == EndHour)">@hour</option>
-                }
-            </select>
-        </div>
-        <div class="col-auto">
-            Min
-        </div>
-        <div class="col-auto">
-            <select @onchange="UpdateEndMinute" class="form-select">
-                @foreach (var minute in EndMinutes)
-                {
-                    <option value="@minute" selected="@(minute == EndMinute)">@minute</option>
-                }
-            </select>
-        </div>
+    <div>
+        <label>End Time:</label>
+        H
+        <select @onchange="UpdateEndHour">
+            @foreach (var hour in EndHours)
+            {
+                <option value="@hour" selected="@(hour == EndHour)">@hour</option>
+            }
+        </select>
+        Min
+        <select @onchange="UpdateEndMinute">
+            @foreach (var minute in EndMinutes)
+            {
+                <option value="@minute" selected="@(minute == EndMinute)">@minute</option>
+            }
+        </select>
     </div>
-    <div class="mb-2 row g-3 align-items-center">
-        <div class="col-auto">
-            <button type="submit" class="btn btn-success">Save</button>
-        </div>
-        <div class="col-auto">
-            <button type="button" class="btn btn-outline-secondary" @onclick="() => HandleCancel()">Cancel</button>
-        </div>
+    <div>
+        <button type="submit">Save</button>
+        <button type="button" @onclick="() => HandleCancel()">Cancel</button>
     </div>
 </EditForm>
 
@@ -218,6 +196,6 @@
             return;
         }
         
-        NavigationManager.NavigateTo($"/Rooms?localStartDateTimeString={localStartDateTime}&localEndDateTimeString={localEndDateTime}");
+        NavigationManager.NavigateTo($"/roomtable/?Viewing=false&localStartDateTimeString={localStartDateTime}&localEndDateTimeString={localEndDateTime}");
     }
 }

@@ -6,4 +6,9 @@ namespace Blazor.Data;
 public class User : IdentityUser
 {
     public IEnumerable<Reservation> Reservations { get; } = new List<Reservation>();
+    public Reservation Book(IBookable bookable, DateTime startDate, DateTime endDate)
+    {
+        return new Reservation();
+    }
+    public int ReservationCount { get; set; }
 }

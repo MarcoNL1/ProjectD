@@ -29,10 +29,5 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
             .HasOne(r => r.Workspace)
             .WithMany(r => r.Reservations)
             .HasForeignKey(r => r.WorkspaceId);
-
-        builder.Entity<Workspace>()
-            .HasOne(w => w.Room)
-            .WithMany(r => r.Workspaces)
-            .HasForeignKey(w => w.RoomId);
     }
 }
