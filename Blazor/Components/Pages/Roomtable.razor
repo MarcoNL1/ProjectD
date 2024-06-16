@@ -25,7 +25,7 @@
         </tr>
         </thead>
         <tbody>
-        @foreach (var room in Rooms.Where(r => r.FloorNumber == floor).OrderBy(r => r.Wing).ThenBy(r => r.RoomNumber))
+        @foreach (var room in Rooms.Where(r => r.FloorNumber == floor).OrderBy(r => r.RoomCode))
         {
             <tr>
                 <td>@(IsRoomAvailable(room) ? "Available" : "Occupied")</td>
