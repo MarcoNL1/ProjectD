@@ -4,44 +4,67 @@
 
 @attribute [Authorize(Roles = "Admin")]
 
-<button @onclick="() => CurrentRoom = new Data.Room()">New Room</button>
+<button @onclick="() => CurrentRoom = new Data.Room()" class="btn btn-dark">New Room</button>
 @if (CurrentRoom is not null)
 {
-    <EditForm Model="CurrentRoom" OnValidSubmit="HandleSubmit">
-        <label>
-            FloorNumber:
-            <InputSelect @bind-Value="CurrentRoom!.FloorNumber">
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-            </InputSelect>
-        </label>
-        <label>
-            Wing:
-            <InputSelect @bind-Value="CurrentRoom!.Wing">
-                <option>Select an option</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-            </InputSelect>
-        </label>
-        <label>
-            Room number:
-            <InputNumber @bind-Value="CurrentRoom!.RoomNumber"/>
-        </label>
-        <label>
-            Name:
-            <InputText @bind-Value="CurrentRoom!.Name"/>
-        </label>
-        <label>
-            <InputSelect @bind-Value="CurrentRoom!.Type">
-                <option>Select an option</option>
-                <option value="Meeting">Meeting</option>
-                <option value="Workspace">Workspace</option>
-            </InputSelect>
-        </label>
-        <button type="submit">Save</button>
-        <button @onclick="() => CurrentRoom = null">Cancel</button>
+    <EditForm Model="CurrentRoom" OnValidSubmit="HandleSubmit" class="position-fixed card p-3 shadow">
+        <div class="mb-3 row g-3 align-items-center">
+            <div class="col-auto">
+                <label for="floor_number" class="col-form-label">Floor number:</label>
+            </div>
+            <div class="col-auto">
+                <InputNumber @bind-Value="CurrentRoom!.FloorNumber" min="0" max="14" id="floor_number" class="form-control"/>
+            </div>
+        </div>
+        <div class="mb-3 row g-3 align-items-center">
+            <div class="col-auto">
+                <label for="wing" class="col-form-label">Wing:</label>
+            </div>
+            <div class="col-auto">
+                <InputSelect @bind-Value="CurrentRoom!.Wing" class="form-select" id="wing">
+                    <option>Select an option</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                </InputSelect>
+            </div>
+        </div>
+        <div class="mb-3 row g-3 align-items-center">
+            <div class="col-auto">
+                <label for="room_number" class="col-form-label">Room number:</label>
+            </div>
+            <div class="col-auto">
+                <InputNumber @bind-Value="CurrentRoom!.RoomNumber" class="form-control" id="room_number"/>
+            </div>
+        </div>
+        <div class="mb-3 row g-3 align-items-center">
+            <div class="col-auto">
+                <label for="name" class="col-form-label">Name:</label>
+            </div>
+            <div class="col-auto">
+                <InputText @bind-Value="CurrentRoom!.Name" class="form-control" id="name"/>
+            </div>
+        </div>
+        <div class="mb-3 row g-3 align-items-center">
+            <div class="col-auto">
+                <label for="room_type" class="col-form-label">Room type:</label>
+            </div>
+            <div class="col-auto">
+                <InputSelect @bind-Value="CurrentRoom!.Type" class="form-select" id="room_type">
+                    <option selected hidden>Select an option</option>
+                    <option value="Meeting">Meeting</option>
+                    <option value="Workspace">Workspace</option>
+                </InputSelect>
+            </div>
+        </div>
+        <div class="row g-3 align-items-center">
+            <div class="col-auto">
+                <button type="submit" class="btn btn-success">Save</button>
+            </div>
+            <div class="col-auto">
+        <button class="btn btn-outline-secondary" @onclick="() => CurrentRoom = null">Cancel</button>
+            </div>
+        </div>
     </EditForm>
 }
 @foreach (var floor in _rooms.Select(r => r.FloorNumber).Distinct().Order())
@@ -65,7 +88,9 @@
                 <td>@room.RoomCode</td>
                 <td>@room.Type</td>
                 <td>@room.Name</td>
-                <td><button @onclick="() => DeleteRoom(room.Id)">Delete</button></td>
+                <td>
+                    <button @onclick="() => DeleteRoom(room.Id)">Delete</button>
+                </td>
             </tr>
         }
         </tbody>
@@ -92,7 +117,7 @@
             await RoomService.CreateRoomAsync(CurrentRoom);
         await OnInitializedAsync();
     }
-    
+
     private async Task DeleteRoom(Guid roomId)
     {
         await RoomService.DeleteRoomAsync(roomId);

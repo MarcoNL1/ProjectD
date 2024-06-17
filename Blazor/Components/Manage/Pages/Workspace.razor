@@ -9,22 +9,37 @@
 <button @onclick="NewWorkspace" class="btn btn-dark">New Workspace</button>
 @if (CurrentWorkspace is not null)
 {
-    <EditForm Model="CurrentWorkspace" OnValidSubmit="HandleSubmit">
-        <label>
-            Desk name:
-            <InputText @bind-Value="CurrentWorkspace!.DeskName"/>
-        </label>
-        <label>
-            Room:
-            <InputSelect @bind-Value="CurrentWorkspace.RoomId">
-                <option>Select an option</option>
-                @foreach (var room in Rooms)
-                {
-                    <option value="@room.Id">@room.RoomCode</option>
-                }
-            </InputSelect>
-        </label>
-        <button type="submit" class="btn btn-outline-success">Save</button>
+    <EditForm Model="CurrentWorkspace" OnValidSubmit="HandleSubmit" class="position-fixed card p-3 shadow">
+        <div class="mb-3 row g-3 align-items-center">
+            <div class="col-auto">
+                <label for="desk_name" class="col-form-label">Desk name:</label>
+            </div>
+            <div class="col-auto">
+                <InputText class="form-control" id="desk_name" @bind-Value="CurrentWorkspace!.DeskName" />
+            </div>
+        </div>
+        <div class="mb-3 row g-3 align-items-center">
+            <div class="col-auto">
+                <label for="room" class="col-form-label">Room:</label>
+            </div>
+            <div class="col-auto">
+                <InputSelect class="form-select" id="room" @bind-Value="CurrentWorkspace.RoomId">
+                    <option selected hidden>Select an option</option>
+                    @foreach (var room in Rooms)
+                    {
+                        <option value="@room.Id">@room.RoomCode @(!string.IsNullOrEmpty(room.Name) ? $"- {room.Name}" : "")</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+        <div class="row g-3 align-items-center">
+            <div class="col-auto">
+                <button type="submit" class="btn btn-success">Save</button>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-outline-secondary" @onclick="() => CurrentWorkspace = null">Cancel</button>
+            </div>
+        </div>
     </EditForm>
 }
 <div class="d-flex flex-wrap gap-5">
@@ -57,7 +72,7 @@
     private async Task NewWorkspace()
     {
         CurrentWorkspace = new Data.Workspace();
-        Rooms = (await RoomService.GetAllRoomsAsync()).ToList();
+        Rooms = (await RoomService.GetAllRoomsAsync()).OrderBy(r => r.RoomCode).ToList();
     }
 
     private async Task HandleSubmit()
