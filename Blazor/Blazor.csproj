@@ -9,19 +9,11 @@
   </PropertyGroup>
 
     <ItemGroup>
-      <Content Include="..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
-      <Content Remove="Components\Data\**" />
-    </ItemGroup>
-
-    <ItemGroup>
       <None Include="wwwroot\Eneco_logo.png" />
       <None Update="Components\Pages\WorkspaceOverview.css">
         <DependentUpon>WorkspaceOverview.razor</DependentUpon>
       </None>
       <None Include="wwwroot\MeetingRoom.png" />
-      <None Remove="Components\Data\**" />
     </ItemGroup>
 
     <ItemGroup>
@@ -37,12 +29,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Remove="Components\Data\User.cs" />
-      <Compile Remove="Components\Data\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <EmbeddedResource Remove="Components\Data\**" />
+      <ProjectReference Include="..\Common\Common.csproj" />
     </ItemGroup>
 
 </Project>

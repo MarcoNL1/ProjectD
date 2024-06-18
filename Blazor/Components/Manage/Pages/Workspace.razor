@@ -1,4 +1,5 @@
 @page "/Manage/Workspace"
+@using Common.Services
 @inject WorkspaceService WorkspaceService
 @inject RoomService RoomService
 
@@ -15,7 +16,7 @@
                 <label for="desk_name" class="col-form-label">Desk name:</label>
             </div>
             <div class="col-auto">
-                <InputText class="form-control" id="desk_name" @bind-Value="CurrentWorkspace!.DeskName" />
+                <InputText class="form-control" id="desk_name" @bind-Value="CurrentWorkspace!.DeskName"/>
             </div>
         </div>
         <div class="mb-3 row g-3 align-items-center">
@@ -27,7 +28,14 @@
                     <option selected hidden>Select an option</option>
                     @foreach (var room in Rooms)
                     {
-                        <option value="@room.Id">@room.RoomCode @(!string.IsNullOrEmpty(room.Name) ? $"- {room.Name}" : "")</option>
+                        @if (CurrentWorkspace.RoomId == room.Id)
+                        {
+                            <option selected value="@room.Id">@room.RoomCode @(!string.IsNullOrEmpty(room.Name) ? $"- {room.Name}" : "")</option>
+                        }
+                        else
+                        {
+                            <option value="@room.Id">@room.RoomCode @(!string.IsNullOrEmpty(room.Name) ? $"- {room.Name}" : "")</option>
+                        }
                     }
                 </InputSelect>
             </div>
@@ -46,24 +54,23 @@
 
     @foreach (var workspace in Workspaces)
     {
-        
         <div>
-            <div>
+            <div @onclick="() => CurrentWorkspace = workspace" style="cursor: pointer;">
                 <div class="title">
                     <h5>@workspace.DeskName</h5>
                 </div>
                 @workspace.Room.RoomCode
-                <button class="btn btn-danger" @onclick="() => DeleteWorkspace(workspace.Id)">Delete</button>
             </div>
+            <button class="btn btn-danger" @onclick="() => DeleteWorkspace(workspace.Id)">Delete</button>
         </div>
     }
 </div>
 
 @code {
-    private List<Data.Workspace> Workspaces { get; set; } = [];
+    private List<Common.Models.Workspace> Workspaces { get; set; } = [];
     private List<Room> Rooms { get; set; } = [];
-    private Data.Workspace? CurrentWorkspace { get; set; }
-    
+    private Common.Models.Workspace? CurrentWorkspace { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         Workspaces = (await WorkspaceService.GetAllWorkspacesAsync()).ToList();
@@ -71,7 +78,7 @@
 
     private async Task NewWorkspace()
     {
-        CurrentWorkspace = new Data.Workspace();
+        CurrentWorkspace = new Common.Models.Workspace();
         Rooms = (await RoomService.GetAllRoomsAsync()).OrderBy(r => r.RoomCode).ToList();
     }
 
@@ -89,4 +96,5 @@
         await WorkspaceService.DeleteWorkspaceAsync(id);
         await OnInitializedAsync();
     }
+
 }

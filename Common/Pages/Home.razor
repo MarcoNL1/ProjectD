@@ -1,0 +1,81 @@
+﻿@page "/test"
+@inject NavigationManager NavigationManager
+
+<PageTitle>Home</PageTitle>
+
+<h1 style="color: white; background: rgba(255, 64, 0, 0.7); text-align: center; border-radius: 15px; font-family: Futura, sans-serif">
+    Welcome to the Eneco Home Page!
+</h1>
+<h3>Make a reservation:</h3>
+<button @onclick="() => HandleReservation()" class="btn btn-success">Reserve here</button>
+<h3>Eneco floor plan view</h3>
+
+<!-- Interactable Image with Clickable Area, @onclick="() => OnAreaClick('A')" alt="Wing A" /> -->
+<div class="image-container">
+    <img src="MockupFloorplan.png" class="interactable-image" usemap="#image-map"/>
+    <map name="image-map">
+        <area shape="rect" coords="130,350,250,420" href="http://localhost:5257/reservation/?roomId=1c958aa3-fb21-42e1-af18-5e3759d49d0b" @onclick="OnArea1Click"/>
+        <area shape="rect" coords="550,350,700,420" href="javascript:void(0);" @onclick="OnArea2Click"/>
+        <area shape="rect" coords="330,680,410,740" href="javascript:void(0);" @onclick="OnArea3Click"/>
+    </map>
+</div>
+
+@code {
+
+    private async Task HandleReservation()
+    {
+        NavigationManager.NavigateTo("reservation");
+    }
+
+    private void OnArea1Click()
+    {
+        // Handling click events:
+        Console.WriteLine("Wing A!");
+
+        //NavigationManager.NavigateTo($"/reservation?wing={Room.Wing}");
+    }
+
+    private void OnArea2Click()
+    {
+        Console.WriteLine("Clicked on wing B");
+    }
+
+    private void OnArea3Click()
+    {
+        Console.WriteLine("That's wing C");
+    }
+
+}
+
+<style>
+    body {
+        background-image: url('Eneco_building1.jpg');
+        background-position: center;
+        background-size: cover;
+        overflow-x: hidden;
+    }
+
+    .top-row.px-4 {
+        background: rgba(255, 255, 255, 80%) !important;
+    }
+
+    .image-container {
+        position: relative;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .interactable-image {
+        display: block;
+        width: 50%; 
+        border: 6px solid #ff5733;
+        border-radius: 10px;
+        transition: transform 1.3s ease-out;
+    }
+
+    .interactable-image:hover {
+        transform: scale(1.05);
+        
+    }
+
+</style>

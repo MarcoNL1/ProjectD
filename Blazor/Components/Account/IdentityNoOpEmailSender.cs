@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Blazor.Data;
+using Common.Models;
 
 namespace Blazor.Components.Account;
 

@@ -1,9 +1,9 @@
-using Blazor.Data;
+using Common.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blazor.Services;
 
-public class ReservationService(IDbContextFactory<AppDbContext> contextFactory)
+public class ReservationServiceOld(IDbContextFactory<AppDbContext> contextFactory)
 {
     public async Task<IEnumerable<Reservation>> GetAllReservationsAsync()
     {

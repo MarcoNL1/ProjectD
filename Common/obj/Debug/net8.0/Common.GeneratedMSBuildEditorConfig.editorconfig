@@ -1,0 +1,43 @@
+is_global = true
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = 
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = Linux,macOS,Windows,browser
+build_property.RootNamespace = Common
+build_property.RootNamespace = Common
+build_property.ProjectDir = /home/calvin/hr/jaar2/project-d_2/MauiApp1/Common/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = 
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = /home/calvin/hr/jaar2/project-d_2/MauiApp1/Common
+build_property._RazorSourceGeneratorDebug = 
+
+[/home/calvin/hr/jaar2/project-d_2/MauiApp1/Common/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSG9tZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/calvin/hr/jaar2/project-d_2/MauiApp1/Common/Pages/Rooms.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUm9vbXMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/calvin/hr/jaar2/project-d_2/MauiApp1/Common/Shared/ManageMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL01hbmFnZU1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/calvin/hr/jaar2/project-d_2/MauiApp1/Common/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/home/calvin/hr/jaar2/project-d_2/MauiApp1/Common/Shared/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL01haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-fqsu1vue6n
+
+[/home/calvin/hr/jaar2/project-d_2/MauiApp1/Common/Shared/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL05hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-leylpdfk2o

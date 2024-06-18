@@ -1,7 +1,7 @@
 using Blazor.Components;
 using Blazor.Components.Account;
-using Blazor.Data;
-using Blazor.Services;
+using Common.Models;
+using Common.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -52,6 +52,19 @@ builder.Services.AddAuthorizationBuilder()
     .AddFallbackPolicy("RequireAuthenticatedUser", policyBuilder =>
     {
         policyBuilder.RequireAuthenticatedUser().Build();
+    });
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("AllowAnonymousStaticFiles", policyBuilder =>
+    {
+        policyBuilder.RequireAssertion(context =>
+        {
+            var path = (context.Resource as HttpContext)?.Request.Path;
+            Console.WriteLine("Resource: " + context.Resource + "\nPATH: " + (path.HasValue ? path.Value : path.HasValue));
+            return path.HasValue && (path.Value.ToString().EndsWith("css") ||
+                                     path.Value.ToString().EndsWith(".js") ||
+                                     path.Value.ToString().EndsWith(".png"));
+        });
     });
 
 builder.Services.AddTransient<RoomService>();
@@ -111,6 +124,24 @@ using (var scope = app.Services.CreateScope())
         await userManager.AddToRoleAsync(user, "Admin");
     }
 }
+
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path;
+    if (path.HasValue && (path.Value.EndsWith(".css") || path.Value.EndsWith(".js") || path.Value.EndsWith(".png")))
+    {
+        var authService = context.RequestServices.GetRequiredService<IAuthorizationService>();
+        var authResult = await authService.AuthorizeAsync(context.User, context, "AllowAnonymousStaticFiles");
+
+        if (authResult.Succeeded)
+        {
+            await next();
+            return;
+        }
+    }
+
+    await next();
+});
 
 app.Run();
 

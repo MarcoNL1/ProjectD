@@ -5,6 +5,8 @@
 @using ChartJs.Blazor.Common
 @using ChartJs.Blazor.Common.Axes
 @using ChartJs.Blazor.Common.Axes.Ticks
+@using Common.Models
+@using Common.Services
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @inject ReservationService ReservationService
@@ -59,7 +61,7 @@
 
     <div>
         <label>Select Table:</label>
-        <select @bind="SelectedTable">
+        <select @bind="SelectedTable" class="form-select w-25">
             <option value="Rooms">Rooms</option>
             <option value="Wings">Wings</option>
             <option value="Floors">Floors</option>
@@ -71,7 +73,7 @@
         @if (SelectedTable == "Rooms")
         {
             <div>
-                <button @onclick="ToggleFilterMenu">Toggle Filter Menu</button>
+                <button @onclick="ToggleFilterMenu" class="btn btn-outline-secondary">Toggle Filter Menu</button>
             </div>
             @if (ShowFilterMenu)
             {
@@ -82,8 +84,8 @@
                     <input type="text" @bind="FilterWing" maxlength="1"/>
                     <label>Filter by Room Number:</label>
                     <input type="number" @bind="FilterRoomNumber"/>
-                    <button @onclick="ApplyFilters">Filter</button>
-                    <button @onclick="ClearFilters">Clear Filters</button>
+                    <button @onclick="ApplyFilters" class="btn btn-dark">Filter</button>
+                    <button @onclick="ClearFilters" class="btn btn-outline-dark">Clear Filters</button>
                 </div>
             }
 
@@ -271,8 +273,8 @@
 @code {
     private List<Reservation> Reservations { get; set; } = new();
     private List<(int FloorNumber, List<int?> RoomNumbers)> activeFloors { get; set; } = new();
-    private List<Data.Room> Rooms { get; set; } = new();
-    private List<Data.Room> FilteredRooms { get; set; } = new();
+    private List<Room> Rooms { get; set; } = new();
+    private List<Room> FilteredRooms { get; set; } = new();
     private List<(string Wing, int Count)> WingCounts { get; set; } = new();
     private List<(int FloorNumber, int Count)> FloorCounts { get; set; } = new();
     private List<User> Users { get; set; } = new();
@@ -454,7 +456,7 @@
         _config.Data.Datasets.Add(dataset);
 
         Rooms = (await RoomService.GetAllRoomsAsync()).ToList();
-        FilteredRooms = new List<Data.Room>(Rooms);
+        FilteredRooms = new List<Room>(Rooms);
 
         var floors = Rooms.Select(r => r.FloorNumber).Distinct().OrderBy(f => f).ToList();
         var wings = Rooms.Select(r => r.Wing).Distinct().OrderBy(f => f).ToList();

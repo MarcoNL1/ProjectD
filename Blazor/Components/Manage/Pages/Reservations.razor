@@ -1,6 +1,8 @@
 ﻿@page "/Manage/Reservations"
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Identity
+@using Common.Models
+@using Common.Services
 @inject ReservationService ReservationService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject UserManager<User> UserManager
@@ -22,7 +24,7 @@
                         case Room room:
                             <p>Room: @room.RoomCode</p>
                             break;
-                        case Data.Workspace workspace:
+                        case Common.Models.Workspace workspace:
                             <p>Workspace: @workspace.DeskName</p>
                             break;
                         default:

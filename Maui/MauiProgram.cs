@@ -1,5 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
-using Maui.Data;
+﻿using Blazor.Services;
+using Microsoft.Extensions.Logging;
 
 namespace Maui;
 
@@ -19,7 +19,9 @@ public static class MauiProgram
         builder.Logging.AddDebug();
 #endif
 
-        builder.Services.AddSingleton<WeatherForecastService>();
+        builder.Services.AddSingleton<RoomService>();
+        builder.Services.AddSingleton<WorkspaceService>();
+        builder.Services.AddSingleton<ReservationService>();
 
         return builder.Build();
     }

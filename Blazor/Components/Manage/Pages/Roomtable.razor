@@ -1,10 +1,12 @@
 @page "/Manage/Room"
 @using Microsoft.AspNetCore.Authorization
+@using Common.Services
+@using RoomService = Common.Services.RoomService
 @inject RoomService RoomService
 
 @attribute [Authorize(Roles = "Admin")]
 
-<button @onclick="() => CurrentRoom = new Data.Room()" class="btn btn-dark">New Room</button>
+<button @onclick="() => CurrentRoom = new Room()" class="btn btn-dark">New Room</button>
 @if (CurrentRoom is not null)
 {
     <EditForm Model="CurrentRoom" OnValidSubmit="HandleSubmit" class="position-fixed card p-3 shadow">
@@ -70,7 +72,7 @@
 @foreach (var floor in _rooms.Select(r => r.FloorNumber).Distinct().Order())
 {
     <h3>Floor @floor</h3>
-    <table class="table table-striped">
+    <table class="table table-striped table-hover">
         <thead>
         <tr>
             <th>Availability</th>
@@ -83,7 +85,7 @@
         <tbody>
         @foreach (var room in _rooms.Where(r => r.FloorNumber == floor))
         {
-            <tr @onclick:preventDefault @onclick="() => SelectRoom(room)">
+            <tr @onclick:preventDefault @onclick="() => SelectRoom(room)" style="cursor: pointer;">
                 <td>@(room.IsAvailable(DateTime.Today, DateTime.Today.AddDays(1)) ? "Available" : "Occupied")</td>
                 <td>@room.RoomCode</td>
                 <td>@room.Type</td>
@@ -98,17 +100,17 @@
 }
 
 @code {
-    [SupplyParameterFromForm] public Data.Room? CurrentRoom { get; set; }
+    [SupplyParameterFromForm] public Room? CurrentRoom { get; set; }
 
-    private List<Data.Room> _rooms { get; set; } = [];
+    private List<Room> _rooms { get; set; } = [];
 
     protected override async Task OnInitializedAsync()
     {
         CurrentRoom = null;
-        _rooms = (await RoomService.GetAllRoomsAsync()).ToList();
+        _rooms = (await RoomService.GetAllRoomsAsync()).OrderBy(r => r.RoomCode).ToList();
     }
 
-    private void SelectRoom(Data.Room room) => CurrentRoom = room;
+    private void SelectRoom(Room room) => CurrentRoom = room;
 
     private async Task HandleSubmit()
     {

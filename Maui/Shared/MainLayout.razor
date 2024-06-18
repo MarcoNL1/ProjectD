@@ -1,5 +1,22 @@
 ﻿@inherits LayoutComponentBase
+@* @inject AuthenticationStateProvider AuthenticationStateProvider *@
 
+@* @code *@
+@* { *@
+@*     // private AuthenticationState _authenticationState; *@
+@* *@
+@*     protected override async Task OnInitializedAsync() *@
+@*     { *@
+@*         // _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync(); *@
+@*     } *@
+@* } *@
+
+@* <AuthorizeView Roles="Admin"> *@
+@*     <ManageMenu/> *@
+@* </AuthorizeView> *@
+@* <MudThemeProvider/> *@
+@* <MudDialogProvider/> *@
+@* <MudSnackbarProvider/> *@
 <div class="page">
     <div class="sidebar">
         <NavMenu/>
@@ -7,11 +24,22 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+            <AuthorizeView>
+                <Authorized>
+                    @* <a href="/Account/Manage">@_authenticationState.User.Identity.Name</a> *@
+                    <a href="/Account/Logout">Logout</a>
+                </Authorized>
+            </AuthorizeView>
         </div>
 
         <article class="content px-4">
             @Body
         </article>
     </main>
+</div>
+
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
 </div>

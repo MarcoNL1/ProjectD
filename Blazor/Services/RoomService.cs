@@ -1,9 +1,9 @@
-using Blazor.Data;
+using Common.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blazor.Services;
 
-public class RoomService(IDbContextFactory<AppDbContext> contextFactory)
+public class RoomServiceOld(IDbContextFactory<AppDbContext> contextFactory)
 {
     public async Task<IEnumerable<Room>> GetAllRoomsAsync()
     {

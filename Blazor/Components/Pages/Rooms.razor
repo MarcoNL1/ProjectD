@@ -1,6 +1,8 @@
 ﻿@page "/Rooms"
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Identity
+@using Common.Models
+@using Common.Services
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject RoomService RoomService
 @inject ReservationService ReservationService
@@ -25,7 +27,7 @@
         </tr>
         </thead>
         <tbody>
-        @foreach (var room in RoomList.Where(r => r.FloorNumber == floor).OrderBy(r => r.Wing).ThenBy(r => r.RoomNumber))
+        @foreach (var room in RoomList.Where(r => r.FloorNumber == floor))
         {
             <tr>
                 <td>@(IsRoomAvailable(room) ? "Available" : "Occupied")</td>
@@ -96,7 +98,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        RoomList = (await RoomService.GetAllRoomsAsync()).ToList();
+        RoomList = (await RoomService.GetAllRoomsAsync()).OrderBy(r => r.RoomCode).ToList();
         Reservations = (await ReservationService.GetAllReservationsAsync()).ToList();
         _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         Viewing = string.IsNullOrEmpty(localStartDateTimeString) && string.IsNullOrEmpty(localEndDateTimeString);

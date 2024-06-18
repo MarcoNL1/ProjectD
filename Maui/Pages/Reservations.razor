@@ -1,0 +1,74 @@
+@page "/Reservations"
+@using Common.Services
+@inject ReservationService ReservationService
+@* @inject AuthenticationStateProvider AuthenticationStateProvider *@
+@* @inject UserManager<User> UserManager *@
+<h3>Reservations</h3>
+
+<div class="row row-cols-1 row-cols-md-2 row-cols-xxl-3 g-3">
+    @foreach (var reservation in ReservationList)
+    {
+        <div class="col">
+            <div class="card">
+                <div class="card-header">@reservation.FormatTimeRange()</div>
+                <div class="card-body">
+                    @switch (reservation.Bookable)
+                    {
+                        case Room room:
+                            <p>Room: @room.RoomCode</p>
+                            break;
+                        case Workspace workspace:
+                            <p>Workspace: @workspace.DeskName</p>
+                            break;
+                        default:
+                            <p>Unable to find the booked entity.</p>
+                            break;
+                    }
+                    <button class="btn btn-danger" @onclick="() => SelectedReservation = reservation">Cancel</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (SelectedReservation is not null)
+{
+    <div class="modal fade show d-block" tabindex="-1" id="cancelReservationModal" aria-modal="true" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <p>Are you sure you want to cancel this reservation?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="() => SelectedReservation = null">Close</button>
+                    <button type="button" class="btn btn-danger" @onclick="CancelReservation">Cancel reservation</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    private List<Reservation> ReservationList { get; set; } = [];
+
+    private Reservation? SelectedReservation { get; set; }
+
+    // private AuthenticationState _authenticationState;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // _authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        // var user = await UserManager.FindByNameAsync(_authenticationState.User.Identity.Name);
+        // ReservationList = (await ReservationService.GetAllReservationsByUserId(user.Id, true)).OrderBy(r => r.StartDate).ToList();
+    }
+
+    private async Task CancelReservation()
+    {
+        await ReservationService.DeleteReservationAsync(SelectedReservation.Id);
+        ReservationList.Remove(SelectedReservation);
+        SelectedReservation = null;
+    }
+
+}
+

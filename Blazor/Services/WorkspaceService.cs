@@ -1,9 +1,9 @@
-using Blazor.Data;
+using Common.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Blazor.Services;
 
-public class WorkspaceService(IDbContextFactory<AppDbContext> contextFactory)
+public class WorkspaceServiceOld(IDbContextFactory<AppDbContext> contextFactory)
 {
     public async Task<IEnumerable<Workspace>> GetAllWorkspacesAsync()
     {

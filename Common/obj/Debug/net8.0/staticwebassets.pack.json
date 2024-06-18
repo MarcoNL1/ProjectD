@@ -1,0 +1,65 @@
+{
+  "Files": [
+    {
+      "Id": "/home/calvin/.nuget/packages/chartjs.blazor.fork/2.0.2/contentFiles/any/netstandard2.1/wwwroot/ChartJsBlazorInterop.js",
+      "PackagePath": "staticwebassets/ChartJsBlazorInterop.js"
+    },
+    {
+      "Id": "/home/calvin/hr/jaar2/project-d_2/MauiApp1/Common/obj/Debug/net8.0/scopedcss/projectbundle/Common.bundle.scp.css",
+      "PackagePath": "staticwebassets/Common.bundle.scp.css"
+    },
+    {
+      "Id": "/home/calvin/hr/jaar2/project-d_2/MauiApp1/Common/wwwroot/Eneco_building1.jpg",
+      "PackagePath": "staticwebassets/Eneco_building1.jpg"
+    },
+    {
+      "Id": "/home/calvin/hr/jaar2/project-d_2/MauiApp1/Common/wwwroot/Eneco_logo.png",
+      "PackagePath": "staticwebassets/Eneco_logo.png"
+    },
+    {
+      "Id": "/home/calvin/hr/jaar2/project-d_2/MauiApp1/Common/wwwroot/MeetingRoom.png",
+      "PackagePath": "staticwebassets/MeetingRoom.png"
+    },
+    {
+      "Id": "/home/calvin/hr/jaar2/project-d_2/MauiApp1/Common/wwwroot/MockupFloorplan.png",
+      "PackagePath": "staticwebassets/MockupFloorplan.png"
+    },
+    {
+      "Id": "/home/calvin/hr/jaar2/project-d_2/MauiApp1/Common/wwwroot/Room.png",
+      "PackagePath": "staticwebassets/Room.png"
+    },
+    {
+      "Id": "/home/calvin/hr/jaar2/project-d_2/MauiApp1/Common/wwwroot/app.css",
+      "PackagePath": "staticwebassets/app.css"
+    },
+    {
+      "Id": "/home/calvin/hr/jaar2/project-d_2/MauiApp1/Common/wwwroot/bootstrap/bootstrap.min.css",
+      "PackagePath": "staticwebassets/bootstrap/bootstrap.min.css"
+    },
+    {
+      "Id": "/home/calvin/hr/jaar2/project-d_2/MauiApp1/Common/wwwroot/bootstrap/bootstrap.min.css.map",
+      "PackagePath": "staticwebassets/bootstrap/bootstrap.min.css.map"
+    },
+    {
+      "Id": "/home/calvin/hr/jaar2/project-d_2/MauiApp1/Common/wwwroot/favicon.png",
+      "PackagePath": "staticwebassets/favicon.png"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.Common.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.build.Common.props",
+      "PackagePath": "build\\Common.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.Common.props",
+      "PackagePath": "buildMultiTargeting\\Common.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.Common.props",
+      "PackagePath": "buildTransitive\\Common.props"
+    }
+  ],
+  "ElementsToRemove": []
+}
